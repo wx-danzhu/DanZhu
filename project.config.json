@@ -18,8 +18,9 @@
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
     "compileHotReLoad": false,
-    "useMultiFrameRuntime": false,
+    "useMultiFrameRuntime": true,
     "useApiHook": true,
+    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -29,14 +30,15 @@
     "useIsolateContext": true,
     "useCompilerModule": true,
     "userConfirmedUseCompilerModuleSwitch": false,
+    "userConfirmedBundleSwitch": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "minifyWXSS": true
   },
   "compileType": "game",
   "libVersion": "1.9.94",
-  "appid": "wxcc6c51d88370f59d",
-  "projectname": "GameTest",
+  "appid": "wx9089d2a3f8180f12",
+  "projectname": "DanZhu",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "condition": {

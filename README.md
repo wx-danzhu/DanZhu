@@ -6,6 +6,7 @@
 - Import to 微信开发者工具 with your AppID
 
 ## 源码目录介绍
+
 ```
 ./js
 ├── base                                   // 定义游戏开发基础类
@@ -26,5 +27,4 @@
 │   └── music.js                           // 全局音效管理器
 ├── databus.js                             // 管控游戏状态
 └── main.js                                // 游戏入口主函数
-
 ```
