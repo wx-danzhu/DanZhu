@@ -40,6 +40,10 @@ var examples = [
 			{
 				name: 'plane',
 				state: 'planePreload'
+			},
+			{
+				name: '弹珠',
+				state: 'danzhuPreload'
 			}
 		]
 	},

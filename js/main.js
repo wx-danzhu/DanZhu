@@ -30,4 +30,4 @@ new BasicExamples(game);
 new GameExamples(game);
 new OpenExamples(game);
 
-game.state.start('boot');
+game.state.start('danzhuPreload');
