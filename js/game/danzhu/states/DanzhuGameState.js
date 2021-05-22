@@ -61,12 +61,12 @@ export default class GameState extends Phaser.State {
     // 	this.shoot();
     // }, this);
 
-    // // 声音，如果要用循环，需要给定totalDuration的值，音频长度
-    // this.soundBgm = this.game.add.audio('bgm', 1, {loop: true, totalDuration: 62});
-    // this.soundBgm.play();
+    // 声音，如果要用循环，需要给定totalDuration的值，音频长度
+    this.soundBgm = this.game.add.audio('bgm', 1, {loop: true, totalDuration: 62});
+    this.soundBgm.play();
 
-    // this.soundBullet = this.game.add.audio('bullet');
-    // this.soundBoom = this.game.add.audio('boom');
+    this.soundBullet = this.game.add.audio('bullet');
+    this.soundBoom = this.game.add.audio('boom');
 
 	}
 
@@ -104,6 +104,7 @@ export default class GameState extends Phaser.State {
 	dragStop() {
 		console.log('shoot~');
 		this.dragging = false;
+		this.shoot();
 	}
 
 	randomEnemyX() {
@@ -130,18 +131,23 @@ export default class GameState extends Phaser.State {
 
 	shoot() {
 
-		var bullet = this.bulletGroup.getFirstExists(false);
+		let bullet = this.bulletGroup.getFirstExists(false);
     if(bullet) {
     	bullet.reset(this.hero.x, this.hero.y);
-    	bullet.body.velocity.y = -600;
+    	const bulletAngle = this.hero.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
+    	bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
+    	bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
     } else {
     	bullet = this.bulletGroup.create(this.hero.x, this.hero.y, 'bullet');
     	bullet.outOfBoundsKill = true;
     	bullet.checkWorldBounds = true;
     	bullet.anchor.setTo(0.5, 0.5);
-    	bullet.scale.setTo(0.4, 0.4);
-    	bullet.body.velocity.y = -600;
+    	bullet.scale.setTo(0.1, 0.1);
+			const bulletAngle = this.hero.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
+    	bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
+    	bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
     }
+		console.log(bullet.body.velocity.x, bullet.body.velocity.y);
 
     this.soundBullet.play();
 
