@@ -1,3 +1,3 @@
-import './js/libs/weapp-adapter'
+import './js/libs/weapp-adapter';
 
-import './js/main'
+import './js/main';

@@ -1,5 +1,5 @@
-import Phaser from '../../../libs/phaser-wx.js'
-import Common from '../atlas/common.js'
+import Phaser from '../../libs/phaser-wx.js';
+import Common from '../atlas/common.js';
 
 export default class PreloadState extends Phaser.State {
 

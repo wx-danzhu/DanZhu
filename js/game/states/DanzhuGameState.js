@@ -1,4 +1,4 @@
-import Phaser from '../../../libs/phaser-wx.js'
+import Phaser from '../../libs/phaser-wx.js';
 
 export default class GameState extends Phaser.State {
 
@@ -12,11 +12,19 @@ export default class GameState extends Phaser.State {
 	}
 
 	create() {
+		this.dragging = false;
+
 		// 开启物理引擎
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.bg = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'bg');
-    this.bg.autoScroll(0, 80);
+
+    this.game.input.onDown.add(this.dragStart, this);
+    this.game.input.onUp.add(this.dragStop, this);
+
+		// bricks
+    this.brickGroup = this.game.add.group();
+    this.brickGroup.enableBody = true;
 
     // 敌机
     this.enemyGroup = this.game.add.group();
@@ -34,25 +42,24 @@ export default class GameState extends Phaser.State {
     this.hero = this.game.add.sprite(this.game.width / 2, this.game.height - 50, 'hero');
     this.hero.anchor.setTo(0.5, 0.5);
     this.hero.scale.setTo(0.5, 0.5);
-    this.hero.inputEnabled = true;
-    this.hero.input.enableDrag(true);
-    this.game.physics.arcade.enable(this.hero);
-    this.hero.body.collideWorldBounds = true;
 
     // 分数
     var style = {font: "32px", fill: "#ffffff"};
     this.score = 0;
     this.scoreText = this.game.add.text(10, 10, this.score + '', style);
 
-    // 生成敌机
-    this.enemyTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 2, function() {
-    	this.generateOneEnemy();
-    }, this);
+		// generate bricks
+		this.generateBricks();
 
-    // 发射子弹
-    this.bulletTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 0.5, function() {
-    	this.shoot();
-    }, this);
+    // // 生成敌机
+    // this.enemyTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 2, function() {
+    // 	this.generateOneEnemy();
+    // }, this);
+
+    // // 发射子弹
+    // this.bulletTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 0.5, function() {
+    // 	this.shoot();
+    // }, this);
 
     // 声音，如果要用循环，需要给定totalDuration的值，音频长度
     this.soundBgm = this.game.add.audio('bgm', 1, {loop: true, totalDuration: 62});
@@ -64,11 +71,40 @@ export default class GameState extends Phaser.State {
 	}
 
 	update() {
-		this.game.physics.arcade.overlap(this.hero, this.enemyGroup, this.dead, null, this);
-		this.game.physics.arcade.overlap(this.enemyGroup, this.bulletGroup, this.hit, null, this);
+		// this.game.physics.arcade.overlap(this.hero, this.enemyGroup, this.dead, null, this);
+		// this.game.physics.arcade.overlap(this.enemyGroup, this.bulletGroup, this.hit, null, this);
+		if (this.dragging) {
+			const p = this.game.input.activePointer;
+			const angle = Phaser.Math.angleBetween(p.x, p.y, this.hero.x, this.hero.y) - Math.PI / 2;
+			this.hero.rotation = angle;
+		}
 	}
 
 	render() {
+	}
+
+	generateBricks() {
+		const locations = [
+			[0, 0], [1, 0], [2, 0], [3, 0],
+			[0, 1],
+			[0, 2], [1, 2], [2, 2], [3, 2],
+		];
+		for (const location of locations) {
+			let brick = this.brickGroup.create(location[0] * 30, (location[1] + 5) * 30, 'brick');
+			brick.anchor.setTo(0, 0);
+			brick.scale.setTo(1, 1);
+		}
+	}
+
+	dragStart() {
+		console.log('show aiming assistance');
+		this.dragging = true;
+	}
+
+	dragStop() {
+		console.log('shoot~');
+		this.dragging = false;
+		this.shoot();
 	}
 
 	randomEnemyX() {
@@ -95,18 +131,23 @@ export default class GameState extends Phaser.State {
 
 	shoot() {
 
-		var bullet = this.bulletGroup.getFirstExists(false);
+		let bullet = this.bulletGroup.getFirstExists(false);
     if(bullet) {
     	bullet.reset(this.hero.x, this.hero.y);
-    	bullet.body.velocity.y = -600;
+    	const bulletAngle = this.hero.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
+    	bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
+    	bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
     } else {
     	bullet = this.bulletGroup.create(this.hero.x, this.hero.y, 'bullet');
     	bullet.outOfBoundsKill = true;
     	bullet.checkWorldBounds = true;
     	bullet.anchor.setTo(0.5, 0.5);
-    	bullet.scale.setTo(0.4, 0.4);
-    	bullet.body.velocity.y = -600;
+    	bullet.scale.setTo(0.1, 0.1);
+			const bulletAngle = this.hero.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
+    	bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
+    	bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
     }
+		console.log(bullet.body.velocity.x, bullet.body.velocity.y);
 
     this.soundBullet.play();
 
