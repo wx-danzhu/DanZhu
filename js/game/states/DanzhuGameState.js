@@ -95,9 +95,9 @@ export default class GameState extends Phaser.State {
 			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
 		];
 		for (const location of locations) {
-			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + (location[1] + 5) * 30, 'brick');
+			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + location[1] * 30, 'brick');
 			brick.body.immovable = true;
-			brick.health = 2;
+			brick.health = 10;
 			brick.anchor.setTo(0, 0);
 			brick.scale.setTo(1, 1);
 		}
@@ -115,22 +115,23 @@ export default class GameState extends Phaser.State {
 	}
 
 	shoot() {
-		let bullet = this.bulletGroup.getFirstExists(false);
+		let bullet = this.bulletGroup.getFirstExists(true);
 		if (bullet) {
-			bullet.reset(this.cannon.x, this.cannon.y);
-			const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
-			bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
-			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
 		} else {
-			bullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
-			bullet.body.bounce.set(1);
-			bullet.outOfBoundsKill = true;
-			bullet.checkWorldBounds = true;
-			bullet.anchor.setTo(0.5, 0.5);
-			bullet.scale.setTo(0.3, 0.3);
+			this.bulletGroup.removeAll();
 			const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
-			bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
-			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
+			for (let i = 0; i < 10; i++) {
+				this.game.time.events.add(Phaser.Timer.SECOND / 10 * i, function () {
+					bullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
+					bullet.body.bounce.set(1);
+					bullet.outOfBoundsKill = true;
+					bullet.checkWorldBounds = true;
+					bullet.anchor.setTo(0.5, 0.5);
+					bullet.scale.setTo(0.3, 0.3);
+					bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
+					bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
+				}, this);
+			}
 		}
 
 		// this.soundBullet.play();
