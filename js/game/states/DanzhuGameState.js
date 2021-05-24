@@ -21,6 +21,17 @@ export default class GameState extends Phaser.State {
 		this.game.input.onDown.add(this.dragStart, this);
 		this.game.input.onUp.add(this.dragStop, this);
 
+		// world walls
+		this.wallGroup = this.game.add.group();
+		this.wallGroup.enableBody = true;
+		this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
+		const wallLeft = this.wallGroup.create(0, 0, 'brick');
+		wallLeft.anchor.setTo(0, 0);
+		const wallRight = this.wallGroup.create(0, 1, 'brick');
+		wallRight.anchor.setTo(0, 0);
+		const wallTop = this.wallGroup.create(0, 2, 'brick');
+		wallTop.anchor.setTo(0, 0);
+
 		// bricks
 		this.brickGroup = this.game.add.group();
 		this.brickGroup.enableBody = true;
@@ -107,7 +118,7 @@ export default class GameState extends Phaser.State {
 			bullet.outOfBoundsKill = true;
 			bullet.checkWorldBounds = true;
 			bullet.anchor.setTo(0.5, 0.5);
-			bullet.scale.setTo(0.1, 0.1);
+			bullet.scale.setTo(0.3, 0.3);
 			const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
 			bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
 			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
