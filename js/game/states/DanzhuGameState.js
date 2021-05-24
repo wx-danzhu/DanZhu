@@ -25,15 +25,16 @@ export default class GameState extends Phaser.State {
 		this.wallGroup = this.game.add.group();
 		this.wallGroup.enableBody = true;
 		this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
-		const wallTop = this.wallGroup.create(-80, -54, 'wall');
+		const wallTop = this.wallGroup.create(-80, -55, 'wall');
 		wallTop.scale.setTo(10, 1);
 		wallTop.body.immovable = true;
-		const wallLeft = this.wallGroup.create(-54, -10, 'wall');
+		const wallLeft = this.wallGroup.create(-55, -10, 'wall');
 		wallLeft.scale.setTo(1, 15);
 		wallLeft.body.immovable = true;
-		const wallRight = this.wallGroup.create(366, -10, 'wall');
+		const wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
 		wallRight.scale.setTo(1, 15);
 		wallRight.body.immovable = true;
+		console.log('scale: ', this.game.scale);
 		console.log(wallTop.body.x, wallTop.body.y, wallTop.body.right, wallTop.body.bottom)
 		console.log(wallLeft.body.x, wallLeft.body.y, wallLeft.body.right, wallLeft.body.bottom)
 		console.log(wallRight.body.x, wallRight.body.y, wallRight.body.right, wallRight.body.bottom)
@@ -77,6 +78,7 @@ export default class GameState extends Phaser.State {
 		this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
 		if (this.dragging) {
 			const p = this.game.input.activePointer;
+			console.log(p.x, p.y, this.cannon.x, this.cannon.y)
 			const angle = Phaser.Math.angleBetween(p.x, p.y, this.cannon.x, this.cannon.y) - Math.PI / 2;
 			this.cannon.rotation = angle;
 		}

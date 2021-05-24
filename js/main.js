@@ -1,4 +1,5 @@
 import Phaser from 'libs/phaser-wx.js';
+import Boot from 'boot/index.js';
 import DanzhuGame from 'game/index.js';
 
 // 保存原始的canvas
@@ -8,9 +9,10 @@ var game = new Phaser.Game({
   width: 375,
   height: 667,
   renderer: Phaser.CANVAS,
-  canvas: canvas
+  canvas: canvas,
 });
 
+new Boot(game);
 new DanzhuGame(game);
 
-game.state.start('danzhuPreload');
+game.state.start('boot');
