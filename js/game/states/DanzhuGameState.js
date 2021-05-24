@@ -65,11 +65,11 @@ export default class GameState extends Phaser.State {
 		// generate bricks
 		this.generateBricks();
 
-		this.soundBgm = this.game.add.audio('bgm', 1, { loop: true, totalDuration: 62 });
-		this.soundBgm.play();
+		// this.soundBgm = this.game.add.audio('bgm', 1, { loop: true, totalDuration: 62 });
+		// this.soundBgm.play();
 
-		this.soundBullet = this.game.add.audio('bullet');
-		this.soundBoom = this.game.add.audio('boom');
+		// this.soundBullet = this.game.add.audio('bullet');
+		// this.soundBoom = this.game.add.audio('boom');
 	}
 
 	update() {
@@ -131,7 +131,7 @@ export default class GameState extends Phaser.State {
 			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
 		}
 
-		this.soundBullet.play();
+		// this.soundBullet.play();
 
 	}
 
@@ -155,7 +155,7 @@ export default class GameState extends Phaser.State {
 				explosion.kill();
 			}, this);
 
-			this.soundBoom.play();
+			// this.soundBoom.play();
 		}
 	}
 
