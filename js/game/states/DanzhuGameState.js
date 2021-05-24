@@ -25,12 +25,18 @@ export default class GameState extends Phaser.State {
 		this.wallGroup = this.game.add.group();
 		this.wallGroup.enableBody = true;
 		this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
-		const wallLeft = this.wallGroup.create(0, 0, 'brick');
-		wallLeft.anchor.setTo(0, 0);
-		const wallRight = this.wallGroup.create(0, 1, 'brick');
-		wallRight.anchor.setTo(0, 0);
-		const wallTop = this.wallGroup.create(0, 2, 'brick');
-		wallTop.anchor.setTo(0, 0);
+		const wallTop = this.wallGroup.create(-80, -54, 'wall');
+		wallTop.scale.setTo(10, 1);
+		wallTop.body.immovable = true;
+		const wallLeft = this.wallGroup.create(-54, -10, 'wall');
+		wallLeft.scale.setTo(1, 15);
+		wallLeft.body.immovable = true;
+		const wallRight = this.wallGroup.create(366, -10, 'wall');
+		wallRight.scale.setTo(1, 15);
+		wallRight.body.immovable = true;
+		console.log(wallTop.body.x, wallTop.body.y, wallTop.body.right, wallTop.body.bottom)
+		console.log(wallLeft.body.x, wallLeft.body.y, wallLeft.body.right, wallLeft.body.bottom)
+		console.log(wallRight.body.x, wallRight.body.y, wallRight.body.right, wallRight.body.bottom)
 
 		// bricks
 		this.brickGroup = this.game.add.group();
@@ -68,6 +74,7 @@ export default class GameState extends Phaser.State {
 
 	update() {
 		this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
+		this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
 		if (this.dragging) {
 			const p = this.game.input.activePointer;
 			const angle = Phaser.Math.angleBetween(p.x, p.y, this.cannon.x, this.cannon.y) - Math.PI / 2;
@@ -79,13 +86,14 @@ export default class GameState extends Phaser.State {
 	}
 
 	generateBricks() {
+		const start_pos = [10, 10];
 		const locations = [
 			[0, 0], [1, 0], [2, 0], [3, 0],
 			[0, 1],
 			[0, 2], [1, 2], [2, 2], [3, 2],
 		];
 		for (const location of locations) {
-			let brick = this.brickGroup.create(location[0] * 30, (location[1] + 5) * 30, 'brick');
+			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + (location[1] + 5) * 30, 'brick');
 			brick.body.immovable = true;
 			brick.health = 2;
 			brick.anchor.setTo(0, 0);
@@ -113,7 +121,6 @@ export default class GameState extends Phaser.State {
 			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
 		} else {
 			bullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
-			bullet.body.collideWorldBounds = true;
 			bullet.body.bounce.set(1);
 			bullet.outOfBoundsKill = true;
 			bullet.checkWorldBounds = true;
@@ -123,15 +130,9 @@ export default class GameState extends Phaser.State {
 			bullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
 			bullet.body.velocity.y = - Math.sin(Math.PI - bulletAngle) * 500;
 		}
-		console.log(bullet.body.velocity.x, bullet.body.velocity.y);
 
 		this.soundBullet.play();
 
-	}
-
-	dead(cannon) {
-		this.stopAll();
-		this.gameOver();
 	}
 
 	hit(brick, bullet) {

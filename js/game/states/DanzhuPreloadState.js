@@ -11,7 +11,7 @@ export default class PreloadState extends Phaser.State {
 	preload() {
 		this.game.load.image('bg', 'assets/plane/images/bg.jpg');
 		this.game.load.image('cannon', 'assets/plane/images/hero.png');
-		this.game.load.image('wall', 'assets/rolling_ball/button_blue.png');
+		this.game.load.image('wall', 'assets/rolling_ball/background_brown.png');
 		this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
 		this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
 		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
