@@ -60,7 +60,7 @@ export default class GameState extends Phaser.State {
 		// score
 		var style = { font: "32px", fill: "#ffffff" };
 		this.score = 0;
-		this.scoreText = this.game.add.text(10, 10, this.score + '', style);
+		this.scoreText = this.game.add.text(15, 15, this.score + '', style);
 
 		// generate bricks
 		this.generateBricks();
@@ -88,9 +88,9 @@ export default class GameState extends Phaser.State {
 	generateBricks() {
 		const start_pos = [10, 10];
 		const locations = [
-			[0, 0], [1, 0], [2, 0], [3, 0],
+			[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 			[0, 1],
-			[0, 2], [1, 2], [2, 2], [3, 2],
+			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
 		];
 		for (const location of locations) {
 			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + (location[1] + 5) * 30, 'brick');
@@ -136,12 +136,11 @@ export default class GameState extends Phaser.State {
 	}
 
 	hit(brick, bullet) {
-		console.log('hit brick!');
+		this.score++;
+		this.scoreText.text = this.score + '';
 		brick.health--;
 		if (brick.health <= 0) {
 			brick.kill();
-			this.score++;
-			this.scoreText.text = this.score + '';
 
 			var explosion = this.explosionGroup.getFirstExists(false);
 			if (!explosion) {
