@@ -1,4 +1,5 @@
 import Phaser from '../../libs/phaser-wx.js';
+import Common from '../atlas/common.js';
 
 export default class GameState extends Phaser.State {
 
@@ -7,7 +8,39 @@ export default class GameState extends Phaser.State {
 		this.game = game;
 	}
 
+	createAudio(name, src, loop = false, autoplay = false) {
+		const audio = wx.createInnerAudioContext();
+		audio.autoplay = autoplay;
+		audio.loop = loop;
+		audio.src = src;
+		if (!this.game.audio) {
+			this.game.audio = {
+				name: audio,
+			};
+		} {
+			this.game.audio[name] = audio;
+		}
+	}
+
 	preload() {
+		this.game.load.image('bg', 'assets/plane/images/bg.jpg');
+		this.game.load.image('cannon', 'assets/plane/images/hero.png');
+		this.game.load.image('wall', 'assets/rolling_ball/background_brown.png');
+		this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
+		this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
+		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
+
+		this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
+		
+		this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
+		this.createAudio('boom', 'assets/plane/audio/boom.mp3');
+		this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
+	}
+
+	init(parameters) {
+		if (parameters) {
+			this.map = parameters.map;
+		}
 	}
 
 	create() {
@@ -64,8 +97,8 @@ export default class GameState extends Phaser.State {
 		this.scoreText = this.game.add.text(15, 15, this.score + '', style);
 
 		// generate bricks
-		this.generateBricks();
-		
+		this.generateBricks(this.map);
+
 		this.game.audio.bgm.play();
 	}
 
@@ -83,9 +116,9 @@ export default class GameState extends Phaser.State {
 	render() {
 	}
 
-	generateBricks() {
+	generateBricks(map) {
 		const start_pos = [10, 10];
-		const locations = [
+		const locations = map || [
 			[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 			[0, 1],
 			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],

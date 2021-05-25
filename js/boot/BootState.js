@@ -13,7 +13,11 @@ export default class PreloadState extends Phaser.State {
 	}
 
 	create() {
-		this.game.state.start('danzhuPreload');
+		this.game.state.start('danzhuGame', true, false, {
+			map: [
+				[0, 0], [1, 1], [2, 2],
+			],
+		});
 	}
 
 }
