@@ -65,12 +65,8 @@ export default class GameState extends Phaser.State {
 
 		// generate bricks
 		this.generateBricks();
-
-		// this.soundBgm = this.game.add.audio('bgm', 1, { loop: true, totalDuration: 62 });
-		// this.soundBgm.play();
-
-		// this.soundBullet = this.game.add.audio('bullet');
-		// this.soundBoom = this.game.add.audio('boom');
+		
+		this.game.audio.bgm.play();
 	}
 
 	update() {
@@ -118,6 +114,7 @@ export default class GameState extends Phaser.State {
 		let bullet = this.bulletGroup.getFirstExists(true);
 		if (bullet) {
 		} else {
+			this.game.audio.bullet.play();
 			this.bulletGroup.removeAll();
 			const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
 			for (let i = 0; i < 10; i++) {
@@ -133,9 +130,6 @@ export default class GameState extends Phaser.State {
 				}, this);
 			}
 		}
-
-		// this.soundBullet.play();
-
 	}
 
 	hit(brick, bullet) {
@@ -144,7 +138,6 @@ export default class GameState extends Phaser.State {
 		brick.health--;
 		if (brick.health <= 0) {
 			brick.kill();
-
 			var explosion = this.explosionGroup.getFirstExists(false);
 			if (!explosion) {
 				explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
@@ -157,8 +150,7 @@ export default class GameState extends Phaser.State {
 			anim.onComplete.add(function () {
 				explosion.kill();
 			}, this);
-
-			// this.soundBoom.play();
+			this.game.audio.boom.play();
 		}
 	}
 

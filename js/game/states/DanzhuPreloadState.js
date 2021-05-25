@@ -17,14 +17,28 @@ export default class PreloadState extends Phaser.State {
 		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
 		this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
-
-		this.game.load.audio('bgm', 'assets/plane/audio/bgm.mp3');
-		this.game.load.audio('boom', 'assets/plane/audio/boom.mp3');
-		this.game.load.audio('bullet', 'assets/plane/audio/bullet.mp3');
+		
+		this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
+		this.createAudio('boom', 'assets/plane/audio/boom.mp3');
+		this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
 	}
 
 	create() {
 		this.game.state.start('DanzhuGame');
+	}
+
+	createAudio(name, src, loop = false, autoplay = false) {
+		const audio = wx.createInnerAudioContext();
+		audio.autoplay = autoplay;
+		audio.loop = loop;
+		audio.src = src;
+		if (!this.game.audio) {
+			this.game.audio = {
+				name: audio,
+			};
+		} {
+			this.game.audio[name] = audio;
+		}
 	}
 
 }
