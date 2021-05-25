@@ -67,10 +67,6 @@ export default class GameState extends Phaser.State {
 		const wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
 		wallRight.scale.setTo(1, 15);
 		wallRight.body.immovable = true;
-		console.log('scale: ', this.game.scale);
-		console.log(wallTop.body.x, wallTop.body.y, wallTop.body.right, wallTop.body.bottom)
-		console.log(wallLeft.body.x, wallLeft.body.y, wallLeft.body.right, wallLeft.body.bottom)
-		console.log(wallRight.body.x, wallRight.body.y, wallRight.body.right, wallRight.body.bottom)
 
 		// bricks
 		this.brickGroup = this.game.add.group();
@@ -107,7 +103,6 @@ export default class GameState extends Phaser.State {
 		this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
 		if (this.dragging) {
 			const p = this.game.input.activePointer;
-			console.log(p.x, p.y, this.cannon.x, this.cannon.y)
 			const angle = Phaser.Math.angleBetween(p.x, p.y, this.cannon.x, this.cannon.y) - Math.PI / 2;
 			this.cannon.rotation = angle;
 		}
@@ -138,7 +133,6 @@ export default class GameState extends Phaser.State {
 	}
 
 	dragStop() {
-		console.log('shoot~');
 		this.dragging = false;
 		this.shoot();
 	}
