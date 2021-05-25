@@ -18,14 +18,16 @@ export default class OpenShowRankingListState extends BackToSubMenuState {
   create() {
     super.create();
 
+    console.log("creating ranking list...");
+
     this.openDataContext = wx.getOpenDataContext();
     this.sharedCanvas = this.openDataContext.canvas;
     
-    var text = "show ranking list";
+    var text = "好友排行";
     // 文字样式
-    var style = { font: "32px Arial", fill: "#ff0044", align: "center" };
+    var style = { font: "32px Arial", fill: "#17202A", align: "center" };
     // 显示文字
-    this.t = this.game.add.text(this.game.world.centerX - 160, 300, text, style);
+    this.t = this.game.add.text(this.game.world.centerX - 160, 50, text, style);
     // 开启输入
     this.t.inputEnabled = true;
     // 文字点击时回调listener，上下文为this

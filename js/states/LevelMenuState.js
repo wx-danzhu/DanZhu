@@ -28,7 +28,7 @@ export default class LevelMenuState extends BackToMenuState {
         this.caseGroup.add(title);
     for(var i=0; i< this.list.length; i++) {
       var levelSqaure = new LevelSquare(this.game, this.game.width / 4 
-      + this.game.width / 4 * (i % 3), 200 + 60 * Math.floor(i / 3), this.list[i]);
+      + this.game.width / 4 * (i % 3), 300 + 100 * Math.floor(i / 3), this.list[i]);
       levelSqaure.addClick(this.clickRect, {state: this, properties: this.list[i], key: this.key});
       this.caseGroup.add(levelSqaure);
     }

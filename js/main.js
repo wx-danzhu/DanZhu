@@ -6,6 +6,7 @@ import AnimationState from 'states/AnimationState.js'
 import MenuState from 'states/MenuState.js'
 import SubMenuState from 'states/SubMenuState.js'
 import LevelMenuState from 'states/LevelMenuState.js'
+import OpenExamples from 'open/index.js';
 
 // 保存原始的canvas
 wx.originContext = canvas.getContext('2d');
@@ -25,6 +26,7 @@ game.state.add('submenu', new SubMenuState(game));
 game.state.add('levelmenu', new LevelMenuState(game));
 
 new DanzhuGame(game);
+new OpenExamples(game);
 
 //game.state.start('menu');
 game.state.start('boot');
