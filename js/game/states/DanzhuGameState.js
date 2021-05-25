@@ -179,6 +179,19 @@ export default class GameState extends Phaser.State {
 			}, this);
 			this.game.audio.boom.play();
 		}
+		const score = this.score + '';
+		wx.setUserCloudStorage({
+      KVDataList: [{
+        key: "score",
+        value: score,
+      }],
+      success: function() {
+        console.log('save score ' + score + ' success');
+      },
+      fail: function() {
+        console.log('save score ' + score + ' fail');
+      },
+    });
 	}
 
 	stopAll() {
