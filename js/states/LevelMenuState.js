@@ -1,9 +1,11 @@
 import Phaser from '../libs/phaser-wx.js';
 import BackToMenuState from '../base/BackToMenuState.js';
 import Arrow from '../objects/Arrow.js';
-import CaseRect from '../objects/CaseRect.js';
+import LevelSquare from '../objects/LevelSquare.js';
+import Title from '../objects/Title.js';
+import Buttons from '../config/StartMenu.js';
 
-export default class SubMenuState extends BackToMenuState {
+export default class LevelMenuState extends BackToMenuState {
   
   constructor(game) {
     super();
@@ -21,11 +23,14 @@ export default class SubMenuState extends BackToMenuState {
     super.create();
 
     this.caseGroup = this.game.add.group();
-
+        // 选择关卡
+        var title = new Title(this.game, 169 + Math.floor(2 / 10) * 252, 125 + Math.floor(0 % 10 / 2) * 126, Buttons[4]);
+        this.caseGroup.add(title);
     for(var i=0; i< this.list.length; i++) {
-      var caseRect = new CaseRect(this.game, this.game.width / 2, 80 + i * 34, this.list[i]);
-      caseRect.addClick(this.clickRect, {state: this, properties: this.list[i], key: this.key});
-      this.caseGroup.add(caseRect);
+      var levelSqaure = new LevelSquare(this.game, this.game.width / 4 
+      + this.game.width / 4 * (i % 3), 200 + 60 * Math.floor(i / 3), this.list[i]);
+      levelSqaure.addClick(this.clickRect, {state: this, properties: this.list[i], key: this.key});
+      this.caseGroup.add(levelSqaure);
     }
     this.pageSize = 16;
     this.maxPageSize = Math.ceil(this.list.length / this.pageSize);

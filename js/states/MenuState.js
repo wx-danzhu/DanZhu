@@ -21,15 +21,24 @@ export default class MenuState extends Phaser.State {
 		var title = new Title(this.game, 169 + Math.floor(2 / 10) * 252, 150 + Math.floor(0 % 10 / 2) * 126, Buttons[3]);
 		this.exampleGroup.add(title);
 
+		// first long button
 		var startLongRect = new LongRect(this.game, 169 + Math.floor(2 / 10) * 252, 420 + Math.floor(0 % 10 / 2) * 126, Buttons[0]);
 		startLongRect.addClick(this.clickRect, {state: this, properties: Buttons[0]});
 		this.exampleGroup.add(startLongRect);
 
-		for(var i=1; i< 3; i++) {
-			var exampleRect = new ShortRect(this.game, 126 + ((i+1) % 2) * 126 + Math.floor((i+1) / 10) * 252, 420 + Math.floor((i+1) % 10 / 2) * 126, Buttons[i]);
-			exampleRect.addClick(this.clickRect, {state: this, properties: Buttons[i]});
-			this.exampleGroup.add(exampleRect);
-		}
+		// choose level
+		var levelRect = new ShortRect(this.game, 126 + ((1+1) % 2) * 126 + Math.floor((1+1) / 10) * 252, 420 + Math.floor((1+1) % 10 / 2) * 126, Buttons[1]);
+		console.log(Buttons[1].key);
+		levelRect.addClick(this.clickLevelRect, {state: this, properties: Buttons[1]});
+		this.exampleGroup.add(levelRect);
+
+		// ranklist
+		var exampleRect = new ShortRect(this.game, 126 + ((2+1) % 2) * 126 + Math.floor((2+1) / 10) * 252, 420 + Math.floor((2+1) % 10 / 2) * 126, Buttons[2]);
+		console.log(Buttons[2].key);
+
+		exampleRect.addClick(this.clickRect, {state: this, properties: Buttons[2]});
+		this.exampleGroup.add(exampleRect);
+
 		this.pageSize = 10;
 		this.maxPageSize = Math.ceil(Buttons.length / this.pageSize);
 		this.curPage = 1;
@@ -71,6 +80,10 @@ export default class MenuState extends Phaser.State {
 
 	clickRect() {
 		this.state.game.state.start('submenu', true, false, this.properties);
+	}
+
+	clickLevelRect() {
+		this.state.game.state.start('levelmenu', true, false, this.properties);
 	}
 
 	enablePageInput(pageNum) {

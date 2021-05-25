@@ -14,31 +14,31 @@ var buttons = [
 		name: '选关',
 		children: [
 			{
-				name: 'load an image',
+				name: '1',
 				state: 'basicLoadAnImage'
 			},
 			{
-				name: 'click on an image',
+				name: '2',
 				state: 'basicClickOnAnImageState'
 			},
 			{
-				name: 'move an image',
+				name: '3',
 				state: 'basicMoveAnImageState'
 			},
 			{
-				name: 'image follow input',
+				name: '4',
 				state: 'basicImageFollowInputState'
 			},
 			{
-				name: 'load an animation',
+				name: '5',
 				state: 'basicLoadAnAnimationState'
 			},
 			{
-				name: 'render text',
+				name: '6',
 				state: 'basicRenderTextState'
 			},
 			{
-				name: 'tween an image',
+				name: '7',
 				state: 'basicTweenAnImageState'
 			}
 		]
@@ -72,6 +72,10 @@ var buttons = [
 	{
 		key: 'title',
 		name: '弹珠之城',
+	},
+	{
+		key: 'levelTitle',
+		name: '选择关卡',
 	}
 ];
 

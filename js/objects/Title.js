@@ -4,12 +4,7 @@ export default class Title extends Phaser.Sprite {
   
   constructor(game, x, y, properties) {
     
-    var bmd = game.add.bitmapData(300, 300);
-
-    bmd.ctx.beginPath();
-    // bmd.ctx.fillStyle = '#AED6F1';
-    // bmd.ctx.fillRect(0, 0, 100, 80);
-    // bmd.ctx.fill();
+    var bmd = game.add.bitmapData(100, 100);
 
     super(game, x, y, bmd);
     this.game = game;
