@@ -2,12 +2,7 @@ var buttons = [
 	{
 		key: 'game',
 		name: '快速游戏',
-		children: [
-			{
-				name: 'danzhu',
-				state: 'danzhuPreload'
-			}
-		]
+		state: 'danzhuPreload'
 	},
 	{
 		key: 'basic',
@@ -46,6 +41,7 @@ var buttons = [
 	{
 		key: 'open',
 		name: '排行',
+		state: 'openShowRankingList',
 		children: [
 			{
 				name: 'show open canvas',

@@ -23,7 +23,7 @@ export default class MenuState extends Phaser.State {
 
 		// first long button
 		var startLongRect = new LongRect(this.game, 169 + Math.floor(2 / 10) * 252, 420 + Math.floor(0 % 10 / 2) * 126, Buttons[0]);
-		startLongRect.addClick(this.clickRect, {state: this, properties: Buttons[0]});
+		startLongRect.addClick(this.clickRankRect, {state: this, properties: Buttons[0]});
 		this.exampleGroup.add(startLongRect);
 
 		// choose level
@@ -36,7 +36,7 @@ export default class MenuState extends Phaser.State {
 		var exampleRect = new ShortRect(this.game, 126 + ((2+1) % 2) * 126 + Math.floor((2+1) / 10) * 252, 420 + Math.floor((2+1) % 10 / 2) * 126, Buttons[2]);
 		console.log(Buttons[2].key);
 
-		exampleRect.addClick(this.clickRect, {state: this, properties: Buttons[2]});
+		exampleRect.addClick(this.clickRankRect, {state: this, properties: Buttons[2]});
 		this.exampleGroup.add(exampleRect);
 
 		this.pageSize = 10;
@@ -85,6 +85,10 @@ export default class MenuState extends Phaser.State {
 	clickLevelRect() {
 		this.state.game.state.start('levelmenu', true, false, this.properties);
 	}
+
+	clickRankRect() {
+    this.state.game.state.start(this.properties.state, true, false, this.key);
+  }
 
 	enablePageInput(pageNum) {
 		this.changePageInput(pageNum, true);
