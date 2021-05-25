@@ -4,6 +4,7 @@ import ShortRect from '../objects/ShortRect.js';
 import LongRect from '../objects/LongRect.js';
 import Title from '../objects/Title.js';
 import Arrow from '../objects/Arrow.js';
+import About from '../objects/About.js';
 
 export default class MenuState extends Phaser.State {
 	
@@ -38,6 +39,12 @@ export default class MenuState extends Phaser.State {
 
 		exampleRect.addClick(this.clickRankRect, {state: this, properties: Buttons[2]});
 		this.exampleGroup.add(exampleRect);
+
+
+		var about = new About(this.game, 169 + Math.floor(2 / 10) * 252, 650 + Math.floor(0 % 10 / 2) * 126, Buttons[5]);
+		this.exampleGroup.add(about);
+		about.addClick(this.clickRankRect, {state: this, properties: Buttons[5]});
+
 
 		this.pageSize = 10;
 		this.maxPageSize = Math.ceil(Buttons.length / this.pageSize);
