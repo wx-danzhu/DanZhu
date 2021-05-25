@@ -31,7 +31,7 @@ export default class GameState extends Phaser.State {
 		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
 		this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
-		
+
 		this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
 		this.createAudio('boom', 'assets/plane/audio/boom.mp3');
 		this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
@@ -87,6 +87,9 @@ export default class GameState extends Phaser.State {
 		this.cannon.anchor.setTo(0.5, 0.5);
 		this.cannon.scale.setTo(0.5, 0.5);
 
+		// aiming lines
+		this.aimingLineGroup = this.game.add.group();
+
 		// score
 		var style = { font: "32px", fill: "#ffffff" };
 		this.score = 0;
@@ -99,16 +102,45 @@ export default class GameState extends Phaser.State {
 	}
 
 	update() {
+		// detect collision between bullets and bricks
 		this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
+		// detect collision between bullets and walls
 		this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
-		if (this.dragging) {
+		// aiming and no bullet is shown
+		if (this.dragging && !this.bulletGroup.getFirstExists(true)) {
 			const p = this.game.input.activePointer;
 			const angle = Phaser.Math.angleBetween(p.x, p.y, this.cannon.x, this.cannon.y) - Math.PI / 2;
+
+			// rotate cannon to point towards pointer.
 			this.cannon.rotation = angle;
+
+			// show aiming assistance
+			this.drawAimingLines(angle + Math.PI / 2);
 		}
 	}
 
 	render() {
+	}
+
+	drawAimingLines() {
+		const line_length = 500;
+		const gap_length = 20;
+		const angle = this.cannon.rotation + Math.PI / 2;
+		const delta_x = Math.cos(Math.PI - angle) * gap_length;
+		const delta_y = - Math.sin(Math.PI - angle) * gap_length;
+		console.log('dx, dy: ', delta_x, delta_y)
+		this.aimingLineGroup.removeAll();
+		let current_length = 0;
+		let current_x = this.cannon.x;
+		let current_y = this.cannon.y;
+		while (current_length < line_length) {
+			const aimingLine = this.aimingLineGroup.create(current_x, current_y, 'bullet');
+			aimingLine.anchor.setTo(0.5, 0.5);
+			aimingLine.scale.setTo(0.1, 0.1);
+			current_x += delta_x;
+			current_y += delta_y;
+			current_length += gap_length;
+		}
 	}
 
 	generateBricks(map) {
@@ -128,7 +160,6 @@ export default class GameState extends Phaser.State {
 	}
 
 	dragStart() {
-		console.log('show aiming assistance');
 		this.dragging = true;
 	}
 
@@ -143,6 +174,7 @@ export default class GameState extends Phaser.State {
 		} else {
 			this.game.audio.bullet.play();
 			this.bulletGroup.removeAll();
+			this.aimingLineGroup.removeAll();
 			const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
 			for (let i = 0; i < 10; i++) {
 				this.game.time.events.add(Phaser.Timer.SECOND / 10 * i, function () {
@@ -181,17 +213,17 @@ export default class GameState extends Phaser.State {
 		}
 		const score = this.score + '';
 		wx.setUserCloudStorage({
-      KVDataList: [{
-        key: "score",
-        value: score,
-      }],
-      success: function() {
-        console.log('save score ' + score + ' success');
-      },
-      fail: function() {
-        console.log('save score ' + score + ' fail');
-      },
-    });
+			KVDataList: [{
+				key: "score",
+				value: score,
+			}],
+			success: function () {
+				console.log('save score ' + score + ' success');
+			},
+			fail: function () {
+				console.log('save score ' + score + ' fail');
+			},
+		});
 	}
 
 	stopAll() {
