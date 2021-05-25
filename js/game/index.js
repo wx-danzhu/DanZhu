@@ -1,15 +1,7 @@
-import Phaser from '../libs/phaser-wx.js';
+import DanzhuGameState from './states/DanzhuGameState.js';
 
-import PlanePreloadState from './plane/states/PlanePreloadState.js'
-import PlaneGameState from './plane/states/PlaneGameState.js'
-
-export default class GameExamples {
-  
+export default class DanzhuGame {
   constructor(game) {
-    
-    game.state.add('planePreload', new PlanePreloadState(game));
-    game.state.add('planeGame', new PlaneGameState(game));
-
+    game.state.add('danzhuGame', new DanzhuGameState(game));
   }
-
 }
