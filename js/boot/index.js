@@ -1,12 +1,12 @@
 import BootState from './BootState.js';
-import Boot2State from '../states/BootState.js'
-import PreloadState from '../states/PreloadState.js'
-import AnimationState from '../states/AnimationState.js'
-import MenuState from '../states/MenuState.js'
-import SubMenuState from '../states/SubMenuState.js'
-import LevelMenuState from '../states/LevelMenuState.js'
-import PauseMenuState from '../states/PauseMenuState.js'
-import LicenseState from '../states/LicenseState.js'
+import Boot2State from '../states/BootState.js';
+import PreloadState from '../states/PreloadState.js';
+import AnimationState from '../states/AnimationState.js';
+import MenuState from '../states/MenuState.js';
+import SubMenuState from '../states/SubMenuState.js';
+import LevelMenuState from '../states/LevelMenuState.js';
+import PauseMenuState from '../states/PauseMenuState.js';
+import LicenseState from '../states/LicenseState.js';
 
 export default class DanzhuGame {
   constructor(game) {

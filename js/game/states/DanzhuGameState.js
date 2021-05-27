@@ -32,7 +32,7 @@ export default class GameState extends Phaser.State {
 		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
 		this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
-		
+
 		this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
 		this.createAudio('boom', 'assets/plane/audio/boom.mp3');
 		this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
@@ -99,55 +99,9 @@ export default class GameState extends Phaser.State {
 		this.game.audio.bgm.play();
 
 		// pause
-		console.log("creating ur little pause...");
-    this.pause = new Pause(this.game, 26, 26, 'arrowBack');
-    this.pause.addClick(this.showPause, this);
+		this.pause = new Pause(this.game, 26, 26, 'arrowBack');
+		this.pause.addClick(this.showPause, this);
 	}
-
-	// show pause menu, currently not working
-  showPause() {
-		console.log("directing to pausemenu...");
-		this.game.paused = true;
-		var dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
-		this.dialog = dialog;
-		dialog.anchor.setTo(0.5, 0.5);
-		dialog.scale.setTo(2.5, 2.5);
-
-		var style = { font: "16px", fill: "#ffffff" };
-		var pauseMenuText = this.game.add.text(2, -35, '菜单', style);
-		pauseMenuText.anchor.setTo(0.5, 0.5);
-		pauseMenuText.scale.setTo(0.7, 0.7);
-		dialog.addChild(pauseMenuText);
-
-				// 继续
-				var continueButton = this.game.add.sprite(0, 0, 'common', 'button');
-				continueButton.anchor.setTo(0.5, 0.5);
-				continueButton.scale.setTo(1.2, 0.7);
-				dialog.addChild(continueButton);
-		
-				var continueText = this.game.add.text(0, 2, '继续', style);
-				continueText.anchor.setTo(0.5, 0.5);
-				continueText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-				continueButton.addChild(continueText);
-		
-				continueButton.inputEnabled = true;
-				continueButton.events.onInputDown.add(this.resume, this);
-
-		// 返回
-		var restartButton = this.game.add.sprite(0, 16, 'common', 'button');
-		restartButton.anchor.setTo(0.5, 0.5);
-		restartButton.scale.setTo(1.2, 0.7);
-		dialog.addChild(restartButton);
-
-		var restartText = this.game.add.text(0, 2, '返回', style);
-		restartText.anchor.setTo(0.5, 0.5);
-		restartText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-		restartButton.addChild(restartText);
-
-		restartButton.inputEnabled = true;
-		restartButton.events.onInputDown.add(this.restart, this);
-		
-  }
 
 	update() {
 		this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
@@ -239,53 +193,65 @@ export default class GameState extends Phaser.State {
 		}
 	}
 
-	stopAll() {
-		this.brickGroup.setAll('body.velocity.y', 0);
-		this.bulletGroup.setAll('body.velocity.y', 0);
-		this.bg.stopScroll();
-		this.hero.input.disableDrag();
-		this.soundBgm.stop();
-	}
-
-	gameOver() {
+	// show pause menu, currently not working
+	showPause() {
+		console.log("directing to pausemenu...");
+		this.game.paused = true;
 		var dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+		this.dialog = dialog;
 		dialog.anchor.setTo(0.5, 0.5);
 		dialog.scale.setTo(2.5, 2.5);
 
 		var style = { font: "16px", fill: "#ffffff" };
-		var gameOverText = this.game.add.text(2, -35, '游戏结束', style);
-		gameOverText.anchor.setTo(0.5, 0.5);
-		gameOverText.scale.setTo(0.7, 0.7);
-		dialog.addChild(gameOverText);
+		var pauseMenuText = this.game.add.text(2, -35, '菜单', style);
+		pauseMenuText.anchor.setTo(0.5, 0.5);
+		pauseMenuText.scale.setTo(0.7, 0.7);
+		dialog.addChild(pauseMenuText);
 
-		var gameOverScoreText = this.game.add.text(0, -8, '得分: ' + this.score, style);
-		gameOverScoreText.anchor.setTo(0.5, 0.5);
-		gameOverScoreText.scale.setTo(0.6, 0.6);
-		dialog.addChild(gameOverScoreText);
+		// 继续
+		this.continueButton = this.game.add.sprite(0, 0, 'common', 'button');
+		this.continueButton.anchor.setTo(0.5, 0.5);
+		this.continueButton.scale.setTo(1.2, 0.7);
+		dialog.addChild(this.continueButton);
 
-		var restartButton = this.game.add.sprite(0, 16, 'common', 'button');
-		restartButton.anchor.setTo(0.5, 0.5);
-		restartButton.scale.setTo(1.2, 0.7);
-		dialog.addChild(restartButton);
+		var continueText = this.game.add.text(0, 2, '继续', style);
+		continueText.anchor.setTo(0.5, 0.5);
+		continueText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+		this.continueButton.addChild(continueText);
 
-		var restartText = this.game.add.text(0, 2, '返回', style);
-		restartText.anchor.setTo(0.5, 0.5);
-		restartText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-		restartButton.addChild(restartText);
+		// 返回
+		this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+		this.backButton.anchor.setTo(0.5, 0.5);
+		this.backButton.scale.setTo(1.2, 0.7);
+		dialog.addChild(this.backButton);
 
-		restartButton.inputEnabled = true;
-		restartButton.events.onInputDown.add(this.restart, this);
+		var backText = this.game.add.text(0, 2, '返回', style);
+		backText.anchor.setTo(0.5, 0.5);
+		backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+		this.backButton.addChild(backText);
+		
+		this.game.input.onDown.add(this.pausemenu_down.bind(this), self);
+
 	}
 
-	resume() {
+	pausemenu_down(event) {
+		if (!this.game.paused) {
+			return;
+		}
+		const continueBonuds = this.continueButton.getBounds();
+		const backBonuds = this.backButton.getBounds();
 
-		// Unpause the game
-		this.dialog.destroy();
-		this.game.paused = false;
-	}
-
-	restart() {
-		this.game.state.start('menu');
+		if (Phaser.Rectangle.contains(continueBonuds, event.x, event.y)) {
+			// continue button pressed
+			console.log('continue button');
+			this.dialog.destroy();
+			this.game.paused = false;
+		} else if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+			// back button pressed
+			console.log('back button');
+			this.game.paused = false;
+			this.game.state.start('menu');
+		}
 	}
 
 }
