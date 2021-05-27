@@ -18,4 +18,4 @@ jobs:
       - name: Lint .js files
         run: |
           npm install
-          npx run lint
+          npm run lint
