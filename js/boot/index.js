@@ -5,7 +5,6 @@ import AnimationState from '../states/AnimationState.js';
 import MenuState from '../states/MenuState.js';
 import SubMenuState from '../states/SubMenuState.js';
 import LevelMenuState from '../states/LevelMenuState.js';
-import PauseMenuState from '../states/PauseMenuState.js';
 import LicenseState from '../states/LicenseState.js';
 
 export default class DanzhuGame {
@@ -17,7 +16,6 @@ export default class DanzhuGame {
     game.state.add('menu', new MenuState(game));
     game.state.add('submenu', new SubMenuState(game));
     game.state.add('levelmenu', new LevelMenuState(game));
-    game.state.add('pausemenu', new PauseMenuState(game));
     game.state.add('licensepage', new LicenseState(game));
   }
 }
