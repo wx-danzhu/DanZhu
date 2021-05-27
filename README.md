@@ -1,4 +1,6 @@
-# MP
+# Danzhu
+
+![ci](https://github.com/wx-danzhu/DanZhu/workflows/ci/badge.svg)
 
 ## Quick Start
 
