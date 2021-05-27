@@ -28,6 +28,7 @@ export default class GameState extends Phaser.State {
 		this.game.load.image('cannon', 'assets/plane/images/hero.png');
 		this.game.load.image('wall', 'assets/rolling_ball/background_brown.png');
 		this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
+		this.game.load.image('bomb', 'assets/rolling_ball/block_locked_small.png');
 		this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
 		this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
@@ -74,6 +75,11 @@ export default class GameState extends Phaser.State {
 		this.brickGroup.enableBody = true;
 		this.brickGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
+		// bricks
+		this.bombGroup = this.game.add.group();
+		this.bombGroup.enableBody = true;
+		this.bombGroup.physicsBodyType = Phaser.Physics.ARCADE;
+
 		// bullet
 		this.bulletGroup = this.game.add.group();
 		this.bulletGroup.enableBody = true;
@@ -99,6 +105,9 @@ export default class GameState extends Phaser.State {
 		// generate bricks
 		this.generateBricks(this.map);
 
+		// generate bombs
+		this.generateBombs(this.map);
+
 		this.game.audio.bgm.play();
 
 		// pause
@@ -109,6 +118,8 @@ export default class GameState extends Phaser.State {
 	update() {
 		// detect collision between bullets and bricks
 		this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
+		// detect collision between bullets and bombs
+		this.game.physics.arcade.collide(this.bombGroup, this.bulletGroup, this.hitBomb, null, this);
 		// detect collision between bullets and walls
 		this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
 		// aiming and no bullet is shown
@@ -184,7 +195,7 @@ export default class GameState extends Phaser.State {
 			[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 			[0, 1],
 			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
-			[0, 10]
+			// [0, 10]
 		];
 		for (const location of locations) {
 			if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
@@ -196,6 +207,25 @@ export default class GameState extends Phaser.State {
 			brick.anchor.setTo(0, 0);
 			brick.height = brick_len;
 			brick.width = brick_len;
+		}
+	}
+
+	generateBombs(bombMap) {
+		const start_pos_x = this.wallLeft.right;
+		const start_pos_y = this.wallTop.bottom;
+		const end_pos_x = this.wallRight.left;
+		const bomb_len = (end_pos_x - start_pos_x) / 10;
+		const locations = bombMap || [[1,1]];
+		for (const location of locations) {
+			if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
+				continue;
+			}
+			const bomb = this.bombGroup.create(start_pos_x + location[0] * bomb_len, start_pos_y + location[1] * bomb_len, 'bomb');
+			bomb.body.immovable = true;
+			bomb.health = 1;
+			bomb.anchor.setTo(0, 0);
+			bomb.height = bomb_len;
+			bomb.width = bomb_len;
 		}
 	}
 
@@ -251,6 +281,75 @@ export default class GameState extends Phaser.State {
 			}, this);
 			this.game.audio.boom.play();
 		}
+		const score = this.score + '';
+		wx.setUserCloudStorage({
+			KVDataList: [{
+				key: "score",
+				value: score,
+			}],
+			success: function () {
+				console.log('save score ' + score + ' success');
+			},
+			fail: function () {
+				console.log('save score ' + score + ' fail');
+			},
+		});
+	}
+	// const bomb = this.bombGroup.create(start_pos_x + location[0] * bomb_len, start_pos_y + location[1] * bomb_len, 'bomb');
+	
+	hitBomb(bomb, bullet) {
+		const xpos = bomb.x;
+		const ypos = bomb.y;
+		bomb.health--;
+		if (bomb.health <= 0) {
+			bomb.kill();
+		}
+		// 	var explosion = this.explosionGroup.getFirstExists(false);
+		// 	if (!explosion) {
+		// 		explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
+		// 		explosion.anchor.setTo(0.5, 0.5);
+		// 	} else {
+		// 		explosion.reset(brick.x, brick.y);
+		// 	}
+		// 	var anim = explosion.animations.add('explosion');
+		// 	anim.play('explosion', 20);
+		// 	anim.onComplete.add(function () {
+		// 		explosion.kill();
+		// 	}, this);
+		// 	this.game.audio.boom.play();
+		// }
+		this.brickGroup.forEach(
+			(brick) => {
+				console.log("inside for each");
+				console.log(Math.pow(brick.x - xpos, 2));
+				console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+				if (Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)) < 100) {
+					console.log("trying to kill brick");
+						this.killBrick(brick);
+				}
+			}
+		);
+	}
+
+	killBrick(brick) {
+		const healthLeft = brick.health;
+		this.score += healthLeft;
+		this.scoreText.text = this.score + '';
+		brick.health == 0;
+		brick.kill();
+		var explosion = this.explosionGroup.getFirstExists(false);
+		if (!explosion) {
+			explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
+			explosion.anchor.setTo(0.5, 0.5);
+		} else {
+			explosion.reset(brick.x, brick.y);
+		}
+		var anim = explosion.animations.add('explosion');
+		anim.play('explosion', 20);
+		anim.onComplete.add(function () {
+			explosion.kill();
+		}, this);
+		this.game.audio.boom.play();
 		const score = this.score + '';
 		wx.setUserCloudStorage({
 			KVDataList: [{
