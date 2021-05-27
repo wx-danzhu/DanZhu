@@ -128,7 +128,6 @@ export default class GameState extends Phaser.State {
 		const angle = this.cannon.rotation + Math.PI / 2;
 		const delta_x = Math.cos(Math.PI - angle) * gap_length;
 		const delta_y = - Math.sin(Math.PI - angle) * gap_length;
-		console.log('dx, dy: ', delta_x, delta_y)
 		this.aimingLineGroup.removeAll();
 		let current_length = 0;
 		let current_x = this.cannon.x;
@@ -140,8 +139,36 @@ export default class GameState extends Phaser.State {
 			current_x += delta_x;
 			current_y += delta_y;
 			current_length += gap_length;
+
+			if (this.checkAlOverlap(aimingLine)) {
+				aimingLine.destroy();
+				break;
+			}
 		}
 	}
+
+	checkAlOverlap(aimingLine) {
+		let overlapping = false;
+		const boundsA = new Phaser.Rectangle(aimingLine.left, aimingLine.top, aimingLine.width , aimingLine.height);
+		this.wallGroup.forEachExists((o) => {
+			const boundsB = o.getBounds();
+			if (Phaser.Rectangle.intersects(boundsA, boundsB)) {
+				overlapping = true;
+			}
+		}, this);
+		if (overlapping) {
+			return true;
+		}
+		this.brickGroup.forEachExists((o) => {
+			const boundsB = o.getBounds();
+			if (Phaser.Rectangle.intersects(boundsA, boundsB)) {
+				overlapping = true;
+			}
+		}, this);
+
+    return overlapping;
+
+}
 
 	generateBricks(map) {
 		const start_pos = [10, 10];
@@ -149,6 +176,7 @@ export default class GameState extends Phaser.State {
 			[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 			[0, 1],
 			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
+			[0, 10]
 		];
 		for (const location of locations) {
 			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + location[1] * 30, 'brick');
