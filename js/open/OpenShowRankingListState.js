@@ -46,18 +46,10 @@ export default class OpenShowRankingListState extends BackToMenuState {
     });
 
     var sharedCanvas = openDataContext.canvas;
-    // var sharedCanvas = wx.getSharedCanvas();
-
-
 
     setTimeout(function() {
       this.game.add.sprite(0, 100, Phaser.XTexture(sharedCanvas, 0, 0, 375, 667));
-    }.bind(this), 800 );
-    // var openCanvas = this.game.add.sprite(0, 100, Phaser.XTexture(sharedCanvas, 0, 0, 375, 667));
-
-    // this.openDataContext.postMessage({
-    //   action: 'SHOW_RANKING_LIST'
-    // });
+    }.bind(this), 1000);
 
   }
 

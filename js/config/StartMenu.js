@@ -135,22 +135,6 @@ var buttons = [
 		state: 'openShowRankingList',
 		children: [
 			{
-				name: 'show open canvas',
-				state: 'openShowOpenCanvas'
-			},
-			{
-				name: 'set your score',
-				state: 'openSetCloudScore'
-			},
-			{
-				name: 'get your score',
-				state: 'openGetCloudScore'
-			},
-			{
-				name: 'get friend score',
-				state: 'openGetFriendCloudScore'
-			},
-			{
 				name: 'show ranking list',
 				state: 'openShowRankingList'
 			}
@@ -163,6 +147,11 @@ var buttons = [
 	{
 		key: 'levelTitle',
 		name: '选择关卡',
+	},
+	{
+		key: 'about',
+		name: 'About Danzhu 2021',
+		state: 'licensepage'
 	}
 ];
 

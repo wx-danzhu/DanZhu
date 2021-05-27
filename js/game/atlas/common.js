@@ -5,7 +5,7 @@ var atlas = {"frames": [
 		"rotated": false,
 		"trimmed": true,
 		"spriteSourceSize": {"x":0,"y":0,"w":119,"h":108},
-		"sourceSize": {"w":119,"h":108}
+		"sourceSize": {"w":119,"h":108},
 	},
 	{
 		"filename": "button",
