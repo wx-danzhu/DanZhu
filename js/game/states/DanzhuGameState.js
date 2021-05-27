@@ -59,15 +59,15 @@ export default class GameState extends Phaser.State {
 		this.wallGroup = this.game.add.group();
 		this.wallGroup.enableBody = true;
 		this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
-		const wallTop = this.wallGroup.create(-80, -55, 'wall');
-		wallTop.scale.setTo(10, 1.6);
-		wallTop.body.immovable = true;
-		const wallLeft = this.wallGroup.create(-55, -10, 'wall');
-		wallLeft.scale.setTo(1, 15);
-		wallLeft.body.immovable = true;
-		const wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
-		wallRight.scale.setTo(1, 15);
-		wallRight.body.immovable = true;
+		this.wallTop = this.wallGroup.create(-80, -10, 'wall');
+		this.wallTop.scale.setTo(10, 1);
+		this.wallTop.body.immovable = true;
+		this.wallLeft = this.wallGroup.create(-55, -10, 'wall');
+		this.wallLeft.scale.setTo(1, 15);
+		this.wallLeft.body.immovable = true;
+		this.wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
+		this.wallRight.scale.setTo(1, 15);
+		this.wallRight.body.immovable = true;
 
 		// bricks
 		this.brickGroup = this.game.add.group();
@@ -163,18 +163,25 @@ export default class GameState extends Phaser.State {
 	}
 
 	generateBricks(map) {
-		const start_pos = [10, 10];
+		const start_pos_x = this.wallLeft.right;
+		const start_pos_y = this.wallTop.bottom;
+		const end_pos_x = this.wallRight.left;
+		const brick_len = (end_pos_x - start_pos_x) / 10;
 		const locations = map || [
 			[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 			[0, 1],
 			[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
 		];
 		for (const location of locations) {
-			let brick = this.brickGroup.create(start_pos[0] + location[0] * 30, start_pos[1] + location[1] * 30, 'brick');
+			if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
+				continue;
+			}
+			const brick = this.brickGroup.create(start_pos_x + location[0] * brick_len, start_pos_y + location[1] * brick_len, 'brick');
 			brick.body.immovable = true;
 			brick.health = 10;
 			brick.anchor.setTo(0, 0);
-			brick.scale.setTo(1, 1);
+			brick.height = brick_len;
+			brick.width = brick_len;
 		}
 	}
 
