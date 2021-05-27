@@ -10,6 +10,9 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
+  ignorePatterns: [
+    'js/libs/*.js',
+  ],
   rules: {
     'linebreak-style': 0,
   },
