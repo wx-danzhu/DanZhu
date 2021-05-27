@@ -1,5 +1,6 @@
 import Phaser from '../../libs/phaser-wx.js';
 import Common from '../atlas/common.js';
+import Pause from '../../objects/Pause.js'
 
 export default class GameState extends Phaser.State {
 
@@ -59,7 +60,7 @@ export default class GameState extends Phaser.State {
 		this.wallGroup.enableBody = true;
 		this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
 		const wallTop = this.wallGroup.create(-80, -55, 'wall');
-		wallTop.scale.setTo(10, 1);
+		wallTop.scale.setTo(10, 1.6);
 		wallTop.body.immovable = true;
 		const wallLeft = this.wallGroup.create(-55, -10, 'wall');
 		wallLeft.scale.setTo(1, 15);
@@ -96,7 +97,57 @@ export default class GameState extends Phaser.State {
 		this.generateBricks(this.map);
 
 		this.game.audio.bgm.play();
+
+		// pause
+		console.log("creating ur little pause...");
+    this.pause = new Pause(this.game, 26, 26, 'arrowBack');
+    this.pause.addClick(this.showPause, this);
 	}
+
+	// show pause menu, currently not working
+  showPause() {
+		console.log("directing to pausemenu...");
+		this.game.paused = true;
+		var dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+		this.dialog = dialog;
+		dialog.anchor.setTo(0.5, 0.5);
+		dialog.scale.setTo(2.5, 2.5);
+
+		var style = { font: "16px", fill: "#ffffff" };
+		var pauseMenuText = this.game.add.text(2, -35, '菜单', style);
+		pauseMenuText.anchor.setTo(0.5, 0.5);
+		pauseMenuText.scale.setTo(0.7, 0.7);
+		dialog.addChild(pauseMenuText);
+
+				// 继续
+				var continueButton = this.game.add.sprite(0, 0, 'common', 'button');
+				continueButton.anchor.setTo(0.5, 0.5);
+				continueButton.scale.setTo(1.2, 0.7);
+				dialog.addChild(continueButton);
+		
+				var continueText = this.game.add.text(0, 2, '继续', style);
+				continueText.anchor.setTo(0.5, 0.5);
+				continueText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+				continueButton.addChild(continueText);
+		
+				continueButton.inputEnabled = true;
+				continueButton.events.onInputDown.add(this.resume, this);
+
+		// 返回
+		var restartButton = this.game.add.sprite(0, 16, 'common', 'button');
+		restartButton.anchor.setTo(0.5, 0.5);
+		restartButton.scale.setTo(1.2, 0.7);
+		dialog.addChild(restartButton);
+
+		var restartText = this.game.add.text(0, 2, '返回', style);
+		restartText.anchor.setTo(0.5, 0.5);
+		restartText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+		restartButton.addChild(restartText);
+
+		restartButton.inputEnabled = true;
+		restartButton.events.onInputDown.add(this.restart, this);
+		
+  }
 
 	update() {
 		this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
@@ -217,6 +268,13 @@ export default class GameState extends Phaser.State {
 
 		restartButton.inputEnabled = true;
 		restartButton.events.onInputDown.add(this.restart, this);
+	}
+
+	resume() {
+
+		// Unpause the game
+		this.dialog.destroy();
+		this.game.paused = false;
 	}
 
 	restart() {

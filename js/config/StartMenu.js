@@ -1,3 +1,7 @@
+import MapGenerator from '../utils/MapGenerator.js';
+
+var gen = new MapGenerator();
+
 var buttons = [
 	{
 		key: 'game',
@@ -12,11 +16,12 @@ var buttons = [
 				name: '1',
 				state: 'danzhuGame',
 				key: {
-					map: [
-						[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-						[0, 1],
-						[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
-					],
+					map: gen.generateMap(3),
+					// map: [
+					// 	[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+					// 	[0, 1],
+					// 	[0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
+					// ],
 				},
 			},
 			{
@@ -99,22 +104,6 @@ var buttons = [
 		state: 'openShowRankingList',
 		children: [
 			{
-				name: 'show open canvas',
-				state: 'openShowOpenCanvas'
-			},
-			{
-				name: 'set your score',
-				state: 'openSetCloudScore'
-			},
-			{
-				name: 'get your score',
-				state: 'openGetCloudScore'
-			},
-			{
-				name: 'get friend score',
-				state: 'openGetFriendCloudScore'
-			},
-			{
 				name: 'show ranking list',
 				state: 'openShowRankingList'
 			}
@@ -127,6 +116,11 @@ var buttons = [
 	{
 		key: 'levelTitle',
 		name: '选择关卡',
+	},
+	{
+		key: 'about',
+		name: 'About Danzhu 2021',
+		state: 'licensepage'
 	}
 ];
 
