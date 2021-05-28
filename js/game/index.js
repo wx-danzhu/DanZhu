@@ -1,4 +1,4 @@
-import DanzhuGameState from './states/DanzhuGameState.js';
+import DanzhuGameState from './states/DanzhuGameState';
 
 export default class DanzhuGame {
   constructor(game) {

@@ -1,15 +1,12 @@
-import Phaser from '../libs/phaser-wx.js';
+import Phaser from '../libs/phaser-wx';
 
 export default class AnimationState extends Phaser.State {
-	
-	constructor(game) {
-		super();
-		this.game = game;
-	}
+  constructor(game) {
+    super();
+    this.game = game;
+  }
 
-	create() {
-		console.log('animation')
-		this.game.state.start('menu');
-	}
-
+  create() {
+    this.game.state.start('menu');
+  }
 }

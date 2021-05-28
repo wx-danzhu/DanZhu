@@ -1,10 +1,8 @@
-import Phaser from '../libs/phaser-wx.js';
+import Phaser from '../libs/phaser-wx';
 
 export default class LongRect extends Phaser.Sprite {
-  
   constructor(game, x, y, properties) {
-    
-    var bmd = game.add.bitmapData(250, 250);
+    const bmd = game.add.bitmapData(250, 250);
 
     bmd.ctx.beginPath();
     bmd.ctx.fillStyle = '#5DADE2';
@@ -16,14 +14,13 @@ export default class LongRect extends Phaser.Sprite {
 
     this.anchor.setTo(0.5, 0.5);
 
-    var style = { font: "32px Arial", fill: "#000", align: "center" };
-    var text = this.game.make.text(0, 20, properties.name, style);
+    const style = { font: '32px Arial', fill: '#000', align: 'center' };
+    const text = this.game.make.text(0, 20, properties.name, style);
     text.anchor.setTo(0.5, 0.5);
     this.addChild(text);
 
     this.events.onInputDown.add(this.onDown, this);
     this.events.onInputUp.add(this.onUp, this);
-
   }
 
   onDown() {
@@ -34,12 +31,7 @@ export default class LongRect extends Phaser.Sprite {
     this.scale.setTo(1, 1);
   }
 
-  
   addClick(clickFn, context) {
-
     this.events.onInputUp.add(clickFn, context);
-
   }
-
-
 }

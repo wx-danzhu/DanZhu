@@ -1,15 +1,14 @@
-import Phaser from '../libs/phaser-wx.js';
-import Arrow from '../objects/Arrow.js';
-import Examples from '../config/StartMenu.js';
+import Phaser from '../libs/phaser-wx';
+import Arrow from '../objects/Arrow';
+import Examples from '../config/StartMenu';
 
 export default class BackToSubMenuState extends Phaser.State {
-  
   constructor(game) {
     super();
     this.game = game;
 
     this.map = {};
-    for(var i=0; i<3; i++) {
+    for (let i = 0; i < 3; i += 1) {
       this.map[Examples[i].key] = Examples[i];
     }
   }
@@ -27,5 +26,4 @@ export default class BackToSubMenuState extends Phaser.State {
     this.game.renderType = Phaser.CANVAS;
     this.game.state.start('submenu', true, false, this.map[this.key]);
   }
-
 }

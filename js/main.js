@@ -1,16 +1,19 @@
-import Phaser from 'libs/phaser-wx.js';
-import Boot from 'boot/index.js';
-import DanzhuGame from 'game/index.js';
-import OpenExamples from 'open/index.js';
+/* global wx:readonly, canvas:readonly */
+/* eslint-disable no-new */
+
+import Phaser from './libs/phaser-wx';
+import Boot from './boot/index';
+import DanzhuGame from './game/index';
+import OpenExamples from './open/index';
 
 // 保存原始的canvas
 wx.originContext = canvas.getContext('2d');
 
-var game = new Phaser.Game({
+const game = new Phaser.Game({
   width: 375,
   height: 667,
   renderer: Phaser.CANVAS,
-  canvas: canvas,
+  canvas,
 });
 
 new Boot(game);
