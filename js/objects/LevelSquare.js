@@ -4,7 +4,7 @@ export default class LevelSquare extends Phaser.Sprite {
   constructor(game, x, y, properties) {
     const bmd = game.add.bitmapData(70, 70);
 
-    bmd.ctx.fillStyle = '#797974';
+    bmd.ctx.fillStyle = '#474838';
     bmd.ctx.fillRect(0, 0, 70, 70);
 
     super(game, x, y, bmd);

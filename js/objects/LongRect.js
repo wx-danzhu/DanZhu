@@ -8,7 +8,7 @@ export default class LongRect extends Phaser.Sprite {
     const bmd = game.add.bitmapData(width, height);
 
     bmd.ctx.beginPath();
-    bmd.ctx.fillStyle = '#5DADE2';
+    bmd.ctx.fillStyle = '#595954';
     bmd.ctx.fillRect(0, 0, width, height);
     bmd.ctx.fill();
 
@@ -17,7 +17,7 @@ export default class LongRect extends Phaser.Sprite {
 
     this.anchor.setTo(0.5, 0.5);
 
-    const style = { font: '32px Arial', fill: '#000' };
+    const style = { font: '32px Arial', fill: '#FFF' };
     const text = this.game.make.text(0, 0, properties.name, style);
     text.anchor.setTo(0.5, 0.5);
     this.addChild(text);

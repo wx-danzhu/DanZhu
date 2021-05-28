@@ -8,7 +8,7 @@ export default class ShortRect extends Phaser.Sprite {
     const bmd = game.add.bitmapData(width, height);
 
     bmd.ctx.beginPath();
-    bmd.ctx.fillStyle = '#5DADE2';
+    bmd.ctx.fillStyle = '#F2F3CC';
     bmd.ctx.fillRect(0, 0, width, height);
     bmd.ctx.fill();
 

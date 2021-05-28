@@ -12,7 +12,7 @@ export default class MenuState extends Phaser.State {
   }
 
   create() {
-    this.game.stage.backgroundColor = '#F4D03F';
+    this.game.stage.backgroundColor = '#00C9B0';
 
     this.exampleGroup = this.game.add.group();
 
