@@ -1,4 +1,4 @@
-import Phaser from '../libs/phaser-wx';
+import Phaser from '../../libs/phaser-wx';
 
 export default class Pause extends Phaser.Sprite {
   constructor(game, x, y, texture) {

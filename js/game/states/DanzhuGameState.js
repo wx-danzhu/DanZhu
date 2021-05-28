@@ -2,7 +2,7 @@
 
 import Phaser from '../../libs/phaser-wx';
 import Common from '../atlas/common';
-import Pause from '../../objects/Pause';
+import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
 
 const wallWidth = 10;
@@ -46,6 +46,7 @@ export default class GameState extends Phaser.State {
 
   create() {
     this.dragging = false;
+    this.canDrag = true;
 
     // start physics engine
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -211,13 +212,17 @@ export default class GameState extends Phaser.State {
     });
   }
 
-  dragStart() {
-    this.dragging = true;
+  dragStart(event) {
+    if (this.canDrag && event.y > this.wallTop.bottom) {
+      this.dragging = true;
+    }
   }
 
   dragStop() {
-    this.dragging = false;
-    this.shoot();
+    if (this.dragging) {
+      this.dragging = false;
+      this.shoot();
+    }
   }
 
   shoot() {
@@ -281,6 +286,7 @@ export default class GameState extends Phaser.State {
 
   // show pause menu, currently not working
   showPause() {
+    this.canDrag = false;
     this.game.paused = true;
     const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
     this.dialog = dialog;
@@ -329,9 +335,14 @@ export default class GameState extends Phaser.State {
       // continue button pressed
       this.dialog.destroy();
       this.game.paused = false;
+      this.game.input.onDown.remove(this.pausemenuDown, this);
+      this.game.time.events.add(Phaser.Timer.SECOND, () => {
+        this.canDrag = true;
+      });
     } else if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
       // back button pressed
       this.game.paused = false;
+      this.game.input.onDown.remove(this.pausemenuDown, this);
       this.game.state.start('menu');
     }
   }
