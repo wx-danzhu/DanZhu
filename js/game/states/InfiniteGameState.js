@@ -150,8 +150,8 @@ export default class InfiniteGameState extends Phaser.State {
       (bomb) => {
         this.totalHealth += bomb.health;
       });
-    console.log("printing total health");
-    console.log(this.totalHealth);
+    // console.log("printing total health");
+    // console.log(this.totalHealth);
   }
 
   update() {
@@ -269,12 +269,12 @@ export default class InfiniteGameState extends Phaser.State {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
         return;
       }
-      const bomb = this.bombGroup.create(startPosX + location[0] * bomb_len, startPosY + location[1] * bomb_len, 'bomb');
+      const bomb = this.bombGroup.create(startPosX + location[0] * bombLen, startPosY + location[1] * bombLen, 'bomb');
       bomb.body.immovable = true;
       bomb.health = 1;
       bomb.anchor.setTo(0, 0);
-      bomb.height = bomb_len;
-      bomb.width = bomb_len;
+      bomb.height = bombLen;
+      bomb.width = bombLen;
     });
   }
 
@@ -291,10 +291,10 @@ export default class InfiniteGameState extends Phaser.State {
     );
   }
 
-  hitBomb(bomb, bullet) {
+  hitBomb(bomb) {
     const xpos = bomb.x;
     const ypos = bomb.y;
-    bomb.health -= 1;
+    bomb.damage(1);
     this.totalHealth -= 1;
     if (bomb.health <= 0) {
       bomb.kill();
@@ -413,10 +413,10 @@ export default class InfiniteGameState extends Phaser.State {
           newBullet.scale.setTo(0.3, 0.3);
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
+          if (i === 9) {
+            newBullet.events.onKilled.add(this.checkGameStatus, this);
+          }
         }, this);
-        if (i === 9) {
-          newBullet.events.onKilled.add(this.checkGameStatus, this);
-        }
       }
     }
   }
@@ -426,7 +426,6 @@ export default class InfiniteGameState extends Phaser.State {
     this.scoreText.text = `Score: ${this.score}`;
     brick.damage(1);
     this.totalHealth -= 1;
-    
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
