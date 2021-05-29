@@ -72,7 +72,7 @@ export default class MenuState extends Phaser.State {
   }
 
   clickLongRect() {
-    this.state.game.state.start('danzhuGame', true, false,
+    this.state.game.state.start('infiniteGame', true, false,
       {
         map: generateMap(),
       });

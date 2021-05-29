@@ -2,7 +2,7 @@ const buttons = [
   {
     key: 'game',
     name: '快速游戏',
-    state: 'danzhuGame',
+    state: 'infiniteGame',
   },
   {
     key: 'basic',
