@@ -45,7 +45,7 @@ export default class GameState extends Phaser.State {
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
     this.game.load.image('oneStar', 'assets/plane/images/oneStar.jpg');
     this.game.load.image('twoStars', 'assets/plane/images/twoStars.png');
-    this.game.load.image('threeStars', 'assets/plane/images/threeStars.jpg');
+    this.game.load.image('threeStars', 'assets/plane/images/threeStars.png');
 
     this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
 
