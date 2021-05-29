@@ -5,6 +5,7 @@ import LongRect from '../objects/LongRect';
 import Title from '../objects/Title';
 import About from '../objects/About';
 import MuteButton from '../objects/MuteButton';
+import generateMap from '../utils/MapGenerator';
 
 export default class MenuState extends Phaser.State {
   constructor(game) {
@@ -24,7 +25,7 @@ export default class MenuState extends Phaser.State {
     // first long button
     const startLongRect = new LongRect(this.game,
       this.game.width / 2, this.game.height - 280, Buttons[0]);
-    startLongRect.addClick(this.clickRankRect, { state: this, properties: Buttons[0] });
+    startLongRect.addClick(this.clickLongRect, { state: this, properties: Buttons[0] });
     this.exampleGroup.add(startLongRect);
 
     // choose level
@@ -70,8 +71,11 @@ export default class MenuState extends Phaser.State {
     }
   }
 
-  clickRect() {
-    this.state.game.state.start('submenu', true, false, this.properties);
+  clickLongRect() {
+    this.state.game.state.start('danzhuGame', true, false,
+      {
+        map: generateMap(),
+      });
   }
 
   clickLevelRect() {

@@ -2,6 +2,9 @@ function generateMap(stage) {
   let level = stage;
   const map = [];
   const set = new Set();
+  if (!level) {
+    level = 1;
+  }
   if (level > 20) {
     level = 20;
   }
