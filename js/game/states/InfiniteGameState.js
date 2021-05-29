@@ -100,9 +100,9 @@ export default class InfiniteGameState extends Phaser.State {
     this.brickGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
     // bombs
-		this.bombGroup = this.game.add.group();
-		this.bombGroup.enableBody = true;
-		this.bombGroup.physicsBodyType = Phaser.Physics.ARCADE;
+    this.bombGroup = this.game.add.group();
+    this.bombGroup.enableBody = true;
+    this.bombGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
     // bullet
     this.bulletGroup = this.game.add.group();
@@ -134,7 +134,7 @@ export default class InfiniteGameState extends Phaser.State {
 
     // generate bombs
     this.generateBombs(this.map);
-    
+
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
@@ -142,17 +142,17 @@ export default class InfiniteGameState extends Phaser.State {
     // set total health number
     this.totalHealth = 0;
     this.brickGroup.forEach(
-			(brick) => {
+      (brick) => {
         // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
         this.totalHealth += brick.health;
       });
-      this.bombGroup.forEach(
-        (bomb) => {
-          // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
-          this.totalHealth += bomb.health;
-        });
-      console.log("printing total health");
-      console.log(this.totalHealth);
+    this.bombGroup.forEach(
+      (bomb) => {
+        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+        this.totalHealth += bomb.health;
+      });
+    // console.log("printing total health");
+    // console.log(this.totalHealth);
   }
 
   update() {
@@ -160,8 +160,8 @@ export default class InfiniteGameState extends Phaser.State {
     this.game.audio.bgm.playIfNotMuted();
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
-		// detect collision between bullets and bombs
-		this.game.physics.arcade.collide(this.bombGroup, this.bulletGroup, this.hitBomb, null, this);
+    // detect collision between bullets and bombs
+    this.game.physics.arcade.collide(this.bombGroup, this.bulletGroup, this.hitBomb, null, this);
     // detect collision between bullets and walls
     this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
     // aiming and no bullet is shown
@@ -248,12 +248,12 @@ export default class InfiniteGameState extends Phaser.State {
       brick.width = brickLen;
     });
   }
-	generateBombs() {
-		const start_pos_x = this.wallLeft.right;
-		const start_pos_y = this.wallTop.bottom;
-		const end_pos_x = this.wallRight.left;
+  generateBombs() {
+    const start_pos_x = this.wallLeft.right;
+    const start_pos_y = this.wallTop.bottom;
+    const end_pos_x = this.wallRight.left;
     const bomb_len = (end_pos_x - start_pos_x) / 10;
-    
+
     let locations = [];
     if (Math.random() < 0.3) {
       let num = Math.floor(Math.random() * 111);
@@ -265,90 +265,90 @@ export default class InfiniteGameState extends Phaser.State {
       }
     };
 
-		locations.forEach((location) => {
+    locations.forEach((location) => {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
         return;
       }
-			const bomb = this.bombGroup.create(start_pos_x + location[0] * bomb_len, start_pos_y + location[1] * bomb_len, 'bomb');
-			bomb.body.immovable = true;
-			bomb.health = 1;
-			bomb.anchor.setTo(0, 0);
-			bomb.height = bomb_len;
-			bomb.width = bomb_len;
+      const bomb = this.bombGroup.create(start_pos_x + location[0] * bomb_len, start_pos_y + location[1] * bomb_len, 'bomb');
+      bomb.body.immovable = true;
+      bomb.health = 1;
+      bomb.anchor.setTo(0, 0);
+      bomb.height = bomb_len;
+      bomb.width = bomb_len;
     });
   }
 
   isOccupied(location) {
     this.brickGroup.forEach(
-			(brick) => {
+      (brick) => {
         if (location[0] === brick.x && location[1] === brick.y) {
           return false;
         }
         // console.log(location[0]);
         // console.log(brick.x);
         // console.log(location[0] === brick.x);
-			}
-		);
+      }
+    );
   }
 
-	hitBomb(bomb, bullet) {
-		const xpos = bomb.x;
-		const ypos = bomb.y;
+  hitBomb(bomb, bullet) {
+    const xpos = bomb.x;
+    const ypos = bomb.y;
     bomb.health--;
     this.totalHealth--;
-		if (bomb.health <= 0) {
-			bomb.kill();
+    if (bomb.health <= 0) {
+      bomb.kill();
     }
     var explosion = this.explosionGroup.getFirstExists(false);
-		if (!explosion) {
-			explosion = this.explosionGroup.create(bomb.x, bomb.y, 'explosion');
-			explosion.anchor.setTo(0.5, 0.5);
-		} else {
-			explosion.reset(bomb.x, bomb.y);
-		}
-		var anim = explosion.animations.add('explosion');
-		anim.play('explosion', 20);
-		anim.onComplete.add(function () {
-			explosion.kill();
-		}, this);
-		this.game.audio.boom.playIfNotMuted();
-		this.brickGroup.forEach(
-			(brick) => {
-				// console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
-				if (Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)) < 100) {
-						this.killBrick(brick);
-				}
-			}
+    if (!explosion) {
+      explosion = this.explosionGroup.create(bomb.x, bomb.y, 'explosion');
+      explosion.anchor.setTo(0.5, 0.5);
+    } else {
+      explosion.reset(bomb.x, bomb.y);
+    }
+    var anim = explosion.animations.add('explosion');
+    anim.play('explosion', 20);
+    anim.onComplete.add(function () {
+      explosion.kill();
+    }, this);
+    this.game.audio.boom.playIfNotMuted();
+    this.brickGroup.forEach(
+      (brick) => {
+        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+        if (Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)) < 100) {
+          this.killBrick(brick);
+        }
+      }
     );
     this.checkGameStatus();
   }
 
-	killBrick(brick) {
-		const healthLeft = brick.health;
-		this.score += healthLeft;
+  killBrick(brick) {
+    const healthLeft = brick.health;
+    this.score += healthLeft;
     this.scoreText.text = this.score + '';
     this.totalHealth -= healthLeft;
-		brick.health == 0;
-		brick.kill();
-		var explosion = this.explosionGroup.getFirstExists(false);
-		if (!explosion) {
-			explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
-			explosion.anchor.setTo(0.5, 0.5);
-		} else {
-			explosion.reset(brick.x, brick.y);
-		}
-		var anim = explosion.animations.add('explosion');
-		anim.play('explosion', 20);
-		anim.onComplete.add(function () {
-			explosion.kill();
-		}, this);
-		this.game.audio.boom.playIfNotMuted();
-		const score = this.score + '';
-		wx.setUserCloudStorage({
-			KVDataList: [{
-				key: "score",
-				value: score,
-			}],
+    brick.health == 0;
+    brick.kill();
+    var explosion = this.explosionGroup.getFirstExists(false);
+    if (!explosion) {
+      explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
+      explosion.anchor.setTo(0.5, 0.5);
+    } else {
+      explosion.reset(brick.x, brick.y);
+    }
+    var anim = explosion.animations.add('explosion');
+    anim.play('explosion', 20);
+    anim.onComplete.add(function () {
+      explosion.kill();
+    }, this);
+    this.game.audio.boom.playIfNotMuted();
+    const score = this.score + '';
+    wx.setUserCloudStorage({
+      KVDataList: [{
+        key: "score",
+        value: score,
+      }],
       success() {
         // eslint-disable-next-line no-console
         console.log(`save score ${score} success`);
@@ -360,7 +360,7 @@ export default class InfiniteGameState extends Phaser.State {
     });
     this.checkGameStatus();
   }
-  
+
   checkGameStatus() {
     if (this.totalHealth <= 0) {
       this.goToNextGame();
@@ -378,11 +378,11 @@ export default class InfiniteGameState extends Phaser.State {
       // show some animation here
       this.game.audio.pass.playIfNotMuted();
       this.state.game.state.start('infiniteGame', true, false,
-      {
-        map: generateMap(),
-        score: this.score,
-        bullet: this.bulletLeft + 10,
-      });
+        {
+          map: generateMap(),
+          score: this.score,
+          bullet: this.bulletLeft + 10,
+        });
     }, 4000);
   }
 
@@ -403,7 +403,7 @@ export default class InfiniteGameState extends Phaser.State {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
       this.bulletLeft--;
-      this.bulletText.text =`Bullet: ${this.bulletLeft}`;
+      this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
@@ -527,52 +527,52 @@ export default class InfiniteGameState extends Phaser.State {
     }
   }
 
-    // show gameEnd menu
-    gameEnd() {
-      this.canDrag = false;
-      this.game.paused = true;
-      const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
-      this.dialog = dialog;
-      dialog.anchor.setTo(0.5, 0.5);
-      dialog.scale.setTo(2.5, 2.5);
-  
-      const style = { font: '16px', fill: '#ffffff' };
-      const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
-      gameEndMenuText.anchor.setTo(0.5, 0.5);
-      gameEndMenuText.scale.setTo(0.7, 0.7);
-      dialog.addChild(gameEndMenuText);
-  
-      const gameEndScoreText = this.game.add.text(0, -8, '得分: ' + this.score, style);
-      gameEndScoreText.anchor.setTo(0.5, 0.5);
-      gameEndScoreText.scale.setTo(0.6, 0.6);
-      dialog.addChild(gameEndScoreText);
-  
-      // 返回
-      this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
-      this.backButton.anchor.setTo(0.5, 0.5);
-      this.backButton.scale.setTo(1.2, 0.7);
-      dialog.addChild(this.backButton);
-  
-      const backText = this.game.add.text(0, 2, '返回', style);
-      backText.anchor.setTo(0.5, 0.5);
-      backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-      this.backButton.addChild(backText);
-  
-      this.game.input.onDown.add(this.gameEndMenuDown, this);
+  // show gameEnd menu
+  gameEnd() {
+    this.canDrag = false;
+    this.game.paused = true;
+    const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+    this.dialog = dialog;
+    dialog.anchor.setTo(0.5, 0.5);
+    dialog.scale.setTo(2.5, 2.5);
+
+    const style = { font: '16px', fill: '#ffffff' };
+    const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
+    gameEndMenuText.anchor.setTo(0.5, 0.5);
+    gameEndMenuText.scale.setTo(0.7, 0.7);
+    dialog.addChild(gameEndMenuText);
+
+    const gameEndScoreText = this.game.add.text(0, -8, '得分: ' + this.score, style);
+    gameEndScoreText.anchor.setTo(0.5, 0.5);
+    gameEndScoreText.scale.setTo(0.6, 0.6);
+    dialog.addChild(gameEndScoreText);
+
+    // 返回
+    this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+    this.backButton.anchor.setTo(0.5, 0.5);
+    this.backButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.backButton);
+
+    const backText = this.game.add.text(0, 2, '返回', style);
+    backText.anchor.setTo(0.5, 0.5);
+    backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.backButton.addChild(backText);
+
+    this.game.input.onDown.add(this.gameEndMenuDown, this);
+  }
+
+  gameEndMenuDown(event) {
+    if (!this.game.paused) {
+      return;
     }
-  
-    gameEndMenuDown(event) {
-      if (!this.game.paused) {
-        return;
-      }
-      const backBonuds = this.backButton.getBounds();
-      if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
-        // back button pressed
-        this.game.paused = false;
-        this.game.input.onDown.remove(this.gameEndMenuDown, this);
-        this.destroyAudios();
-        this.game.state.start('menu');
-      }
+    const backBonuds = this.backButton.getBounds();
+    if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+      // back button pressed
+      this.game.paused = false;
+      this.game.input.onDown.remove(this.gameEndMenuDown, this);
+      this.destroyAudios();
+      this.game.state.start('menu');
     }
+  }
 
 }
