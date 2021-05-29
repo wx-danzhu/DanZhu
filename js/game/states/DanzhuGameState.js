@@ -275,7 +275,7 @@ export default class GameState extends Phaser.State {
     }
     // check bullet number
     if (this.bulletLeft <= 0) {
-      this.gameEnd;
+      this.gameEnd();
     }
   }
 
@@ -394,7 +394,7 @@ export default class GameState extends Phaser.State {
       gameEndMenuText.scale.setTo(0.7, 0.7);
       dialog.addChild(gameEndMenuText);
 
-      const star = this.bulletLeft == 0 ? 1 : this.bulletLeft == 1 ? 2 : 3;
+      const star = this.bulletLeft === 0 ? 1 : (this.bulletLeft === 1 ? 2 : 3);
       const gameEndStarText = this.game.add.text(0, -8, '星数: ' + star, style);
       gameEndStarText.anchor.setTo(0.5, 0.5);
       gameEndStarText.scale.setTo(0.6, 0.6);
