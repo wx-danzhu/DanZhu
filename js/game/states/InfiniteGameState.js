@@ -279,16 +279,19 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   isOccupied(location) {
+    let occupied = true;
     this.brickGroup.forEach(
       (brick) => {
         if (location[0] === brick.x && location[1] === brick.y) {
-          return false;
+          occupied = false;
         }
+        return;
         // console.log(location[0]);
         // console.log(brick.x);
         // console.log(location[0] === brick.x);
       }
     );
+    return occupied;
   }
 
   hitBomb(bomb) {
@@ -327,7 +330,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.score += healthLeft;
     this.scoreText.text = `Score: ${this.score}`;
     this.totalHealth -= healthLeft;
-    brick.health = 0;
+    brick.damage(healthLeft);
     brick.kill();
     var explosion = this.explosionGroup.getFirstExists(false);
     if (!explosion) {
