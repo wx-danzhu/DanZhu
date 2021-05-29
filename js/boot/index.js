@@ -1,11 +1,10 @@
-import BootState from './BootState.js';
-import Boot2State from '../states/BootState.js';
-import PreloadState from '../states/PreloadState.js';
-import AnimationState from '../states/AnimationState.js';
-import MenuState from '../states/MenuState.js';
-import SubMenuState from '../states/SubMenuState.js';
-import LevelMenuState from '../states/LevelMenuState.js';
-import LicenseState from '../states/LicenseState.js';
+import BootState from './BootState';
+import Boot2State from '../states/BootState';
+import PreloadState from '../states/PreloadState';
+import AnimationState from '../states/AnimationState';
+import MenuState from '../states/MenuState';
+import LevelMenuState from '../states/LevelMenuState';
+import LicenseState from '../states/LicenseState';
 
 export default class DanzhuGame {
   constructor(game) {
@@ -14,7 +13,6 @@ export default class DanzhuGame {
     game.state.add('preload', new PreloadState(game));
     game.state.add('animation', new AnimationState(game));
     game.state.add('menu', new MenuState(game));
-    game.state.add('submenu', new SubMenuState(game));
     game.state.add('levelmenu', new LevelMenuState(game));
     game.state.add('licensepage', new LicenseState(game));
   }

@@ -1,8 +1,6 @@
-import Phaser from '../libs/phaser-wx.js';
-import BackToMenuState from '../base/BackToMenuState.js';
+import BackToMenuState from '../base/BackToMenuState';
 
 export default class LicenseState extends BackToMenuState {
-  
   constructor(game) {
     super();
     this.game = game;
@@ -12,20 +10,12 @@ export default class LicenseState extends BackToMenuState {
     super.init(key);
   }
 
-  preload() {
-  }
-
   create() {
     super.create();
 
-    console.log("loading license page...");
-
-    
-    var text = "Our license page";
-    var style = { font: "20px Arial", fill: "#17202A", align: "center" };
+    const text = 'Our license page';
+    const style = { font: '20px Arial', fill: '#17202A', align: 'center' };
     this.t = this.game.add.text(this.game.world.centerX - 160, 50, text, style);
     this.t.inputEnabled = true;
-
   }
-
 }
