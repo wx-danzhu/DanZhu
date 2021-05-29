@@ -257,7 +257,8 @@ export default class InfiniteGameState extends Phaser.State {
     if (Math.random() < 0.3) {
       let num = Math.floor(Math.random() * 111);
       locations = [[Math.floor(num / 10), num % 10]];
-      let coord = [startPosX + locations[0][0] * bombLen, startPosY + locations[0][1] * bombLen];
+      let coord = [startPosX + locations[0][0] * bombLen, startPosY
+       + locations[0][1] * bombLen];
       while (this.isOccupied(coord)) {
         num = Math.floor(Math.random() * 111);
         locations = [[Math.floor(num / 10), num % 10]];
@@ -293,8 +294,8 @@ export default class InfiniteGameState extends Phaser.State {
   hitBomb(bomb, bullet) {
     const xpos = bomb.x;
     const ypos = bomb.y;
-    bomb.health--;
-    this.totalHealth--;
+    bomb.health -= 1;
+    this.totalHealth -= 1;
     if (bomb.health <= 0) {
       bomb.kill();
     }
@@ -314,7 +315,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.brickGroup.forEach(
       (brick) => {
         // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
-        if (Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)) < 100) {
+        if (Math.sqrt((brick.x - xpos) ** 2 + (brick.y - ypos) ** 2) < 100) {
           this.killBrick(brick);
         }
       }
