@@ -4,6 +4,7 @@ import Phaser from '../../libs/phaser-wx';
 import Common from '../atlas/common';
 import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
+import Buttons from '../../config/StartMenu';
 
 const wallWidth = 10;
 const wallHeight = 50;
@@ -48,11 +49,14 @@ export default class GameState extends Phaser.State {
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
     this.createAudio('boom', 'assets/plane/audio/boom.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
+    this.createAudio('pass', 'assets/plane/audio/pass.mp3');
   }
 
   init(parameters) {
     if (parameters) {
       this.map = parameters.map;
+      this.levelKey = parameters;
+      this.levelIndex = parameters.index;
     }
   }
 
@@ -127,9 +131,23 @@ export default class GameState extends Phaser.State {
     // generate bricks
     this.generateBricks(this.map);
 
+    // bullet left
+    this.bulletLeft = 5;
+    this.bulletText = this.game.add.text(140, 15, `Bullet: ${this.bulletLeft}`, style);
+
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
+
+        // set total health number
+        this.totalHealth = 0;
+        this.brickGroup.forEach(
+          (brick) => {
+            this.totalHealth += brick.health;
+          });
+    //  console.log("printing total health");
+    //  console.log(this.totalHealth);
+
   }
 
   update() {
@@ -240,6 +258,8 @@ export default class GameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
+      this.bulletLeft--;
+      this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
@@ -257,12 +277,17 @@ export default class GameState extends Phaser.State {
         }, this);
       }
     }
+    // check bullet number
+    if (this.bulletLeft <= 0) {
+      this.gameEnd;
+    }
   }
 
   hit(brick) {
     this.score += 1;
     this.scoreText.text = `${this.score}`;
     brick.damage(1);
+    this.totalHealth--;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
@@ -294,6 +319,7 @@ export default class GameState extends Phaser.State {
         console.log(`save score ${score} fail`);
       },
     });
+    this.checkGameStatus();
   }
 
   // show pause menu, currently not working
@@ -357,6 +383,153 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.pausemenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
+    }
+  }
+
+  checkGameStatus() {
+    if (this.totalHealth <= 0) {
+      setTimeout(() => {
+        this.goToNextGame();
+      }, 2000);
+    }
+    if (this.bulletLeft <= 0) {
+      setTimeout(() => {
+        this.gameEnd();
+      }, 2000);
+    }
+  }
+
+    // show goToNextGame menu
+    goToNextGame() {
+      this.game.audio.pass.playIfNotMuted();
+      this.canDrag = false;
+      this.game.paused = true;
+      const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+      this.dialog = dialog;
+      dialog.anchor.setTo(0.5, 0.5);
+      dialog.scale.setTo(2.5, 2.5);
+  
+      const style = { font: '16px', fill: '#ffffff' };
+      const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
+      gameEndMenuText.anchor.setTo(0.5, 0.5);
+      gameEndMenuText.scale.setTo(0.7, 0.7);
+      dialog.addChild(gameEndMenuText);
+
+      const star = this.bulletLeft == 0 ? 1 : this.bulletLeft == 1 ? 2 : 3;
+      const gameEndScoreText = this.game.add.text(0, -8, '星数: ' + star, style);
+      gameEndScoreText.anchor.setTo(0.5, 0.5);
+      gameEndScoreText.scale.setTo(0.6, 0.6);
+      dialog.addChild(gameEndScoreText);
+  
+      // 下一关
+      this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
+      this.nextLevelButton.anchor.setTo(0.5, 0.5);
+      this.nextLevelButton.scale.setTo(1.2, 0.7);
+      dialog.addChild(this.nextLevelButton);
+  
+      const nextLevelText = this.game.add.text(0, 2, '下一关', style);
+      nextLevelText.anchor.setTo(0.5, 0.5);
+      nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+      this.nextLevelButton.addChild(nextLevelText);
+  
+      // 返回
+      this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+      this.backButton.anchor.setTo(0.5, 0.5);
+      this.backButton.scale.setTo(1.2, 0.7);
+      dialog.addChild(this.backButton);
+  
+      const backText = this.game.add.text(0, 2, '返回', style);
+      backText.anchor.setTo(0.5, 0.5);
+      backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+      this.backButton.addChild(backText);
+  
+      this.game.input.onDown.add(this.goToNextDown, this);
+    }
+  
+    goToNextDown(event) {
+      if (!this.game.paused) {
+        return;
+      }
+      const goToNextBonuds = this.nextLevelButton.getBounds();
+      const backBonuds = this.backButton.getBounds();
+      if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+        // back button pressed
+        this.game.paused = false;
+        this.game.input.onDown.remove(this.gameEndMenuDown, this);
+        this.destroyAudios();
+        this.game.state.start('menu');
+      } else if (Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
+        // go to next level
+        this.game.paused = false;
+        this.game.input.onDown.remove(this.goToNextDown, this);
+        this.destroyAudios();
+        const list = Buttons[1].children;
+        this.state.game.state.start(
+          'danzhuGame',
+          true, false, list[this.levelIndex].key);
+  
+      }
+    }
+
+  // show gameEnd menu
+  gameEnd() {
+    this.canDrag = false;
+    this.game.paused = true;
+    const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+    this.dialog = dialog;
+    dialog.anchor.setTo(0.5, 0.5);
+    dialog.scale.setTo(2.5, 2.5);
+
+    const style = { font: '16px', fill: '#ffffff' };
+    const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
+    gameEndMenuText.anchor.setTo(0.5, 0.5);
+    gameEndMenuText.scale.setTo(0.7, 0.7);
+    dialog.addChild(gameEndMenuText);
+
+    // 重玩本关
+    this.restartButton = this.game.add.sprite(0, 0, 'common', 'button');
+    this.restartButton.anchor.setTo(0.5, 0.5);
+    this.restartButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.restartButton);
+
+    const restartText = this.game.add.text(0, 2, '重玩', style);
+    restartText.anchor.setTo(0.5, 0.5);
+    restartText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.restartButton.addChild(restartText);
+
+    // 返回
+    this.backToMenuButton = this.game.add.sprite(0, 16, 'common', 'button');
+    this.backToMenuButton.anchor.setTo(0.5, 0.5);
+    this.backToMenuButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.backToMenuButton);
+
+    const backToMenuText = this.game.add.text(0, 2, '返回', style);
+    backToMenuText.anchor.setTo(0.5, 0.5);
+    backToMenuText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.backToMenuButton.addChild(backToMenuText);
+
+    this.game.input.onDown.add(this.gameEndMenuDown, this);
+  }
+
+  gameEndMenuDown(event) {
+    if (!this.game.paused) {
+      return;
+    }
+    const restartBonuds = this.restartButton.getBounds();
+    const backBonuds = this.backToMenuButton.getBounds();
+    if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+      // back button pressed
+      this.game.paused = false;
+      this.game.input.onDown.remove(this.gameEndMenuDown, this);
+      this.destroyAudios();
+      this.game.state.start('menu');
+    } else if (Phaser.Rectangle.contains(restartBonuds, event.x, event.y)) {
+      // restart this level
+      this.game.paused = false;
+      this.game.input.onDown.remove(this.gameEndMenuDown, this);
+      this.destroyAudios();
+      this.state.game.state.start('danzhuGame', true, false, this.levelKey);
+
     }
   }
 }

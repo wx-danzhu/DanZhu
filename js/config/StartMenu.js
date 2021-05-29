@@ -12,6 +12,7 @@ const buttons = [
         name: 'Maze',
         state: 'danzhuGame',
         key: {
+          index: 1,
           map: [
             [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0],
             [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [10, 2],
@@ -30,7 +31,7 @@ const buttons = [
           /**
  *inner bricks has twice the health, the core brick has thre times the health
  */
-
+index: 2,
           map: [
             [0, 0],
             [0, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1],
@@ -51,6 +52,7 @@ const buttons = [
         name: 'Long corridor',
         state: 'danzhuGame',
         key: {
+          index: 3,
           map: [
             [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1],
             [9, 2],
@@ -65,6 +67,7 @@ const buttons = [
         name: 'clusters',
         state: 'danzhuGame',
         key: {
+          index: 4,
           map: [
             [4, 1], [5, 1], [6, 1],
             [4, 2], [5, 2], [6, 2],
@@ -81,6 +84,7 @@ const buttons = [
         name: 'Scattered',
         state: 'danzhuGame',
         key: {
+          index: 5,
           map: [
             [0, 0], [2, 0], [4, 0], [6, 0], [8, 0],
             [0, 2], [2, 2], [4, 2], [6, 2], [8, 2],
@@ -95,6 +99,7 @@ const buttons = [
         name: 'Smile',
         state: 'danzhuGame',
         key: {
+          index: 6,
           map: [
             [2, 1], [4, 1], [6, 1], [8, 1],
             [3, 2], [7, 2],
@@ -110,6 +115,7 @@ const buttons = [
         name: 'Radient',
         state: 'danzhuGame',
         key: {
+          index: 7,
           map: [
             [0, 1], [4, 1], [5, 1], [9, 1],
             [1, 2], [4, 2], [5, 2], [8, 2],

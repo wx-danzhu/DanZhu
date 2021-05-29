@@ -149,7 +149,6 @@ export default class InfiniteGameState extends Phaser.State {
       });
     this.bombGroup.forEach(
       (bomb) => {
-        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
         this.totalHealth += bomb.health;
       });
     // console.log("printing total health");
@@ -377,7 +376,6 @@ export default class InfiniteGameState extends Phaser.State {
     this.game.audio.pass.playIfNotMuted();
     setTimeout(() => {
       // show some animation here
-      this.game.audio.pass.playIfNotMuted();
       this.state.game.state.start('infiniteGame', true, false,
         {
           map: generateMap(this.level + 1),
@@ -430,7 +428,8 @@ export default class InfiniteGameState extends Phaser.State {
     this.score += 1;
     this.scoreText.text = `${this.score}`;
     brick.damage(1);
-    this.totalHealth--;
+
+    
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
