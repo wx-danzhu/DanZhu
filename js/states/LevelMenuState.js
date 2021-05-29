@@ -21,25 +21,24 @@ export default class LevelMenuState extends BackToMenuState {
 
     this.caseGroup = this.game.add.group();
     // 选择关卡
-    const title = new Title(this.game, 169 + Math.floor(2 / 10) * 252,
-      125 + Math.floor((0 % 10) / 2) * 126, Buttons[4]);
+    const title = new Title(this.game,
+      this.game.width / 2, 180, Buttons[4]);
     this.caseGroup.add(title);
     for (let i = 0; i < this.list.length; i += 1) {
-      const levelSqaure = new LevelSquare(this.game, this.game.width / 4
-      + (this.game.width / 4) * (i % 3), 300 + 100 * Math.floor(i / 3), this.list[i]);
+      const levelSqaure = new LevelSquare(
+        this.game,
+        this.game.width / 4 + (this.game.width / 4) * (i % 3),
+        300 + 100 * Math.floor(i / 3),
+        { name: `${i + 1}` },
+      );
       levelSqaure.addClick(this.clickRect,
         { state: this, properties: this.list[i], key: this.list[i].key });
       this.caseGroup.add(levelSqaure);
     }
-    this.pageSize = 16;
+    this.pageSize = 9;
     this.maxPageSize = Math.ceil(this.list.length / this.pageSize);
     this.curPage = 1;
     this.enablePageInput(this.curPage);
-
-    this.mask = this.game.add.graphics(0, 0);
-    this.mask.beginFill(0xffffff);
-    this.mask.drawRect(0, 64, this.game.width, this.game.height - 124);
-    this.caseGroup.mask = this.mask;
 
     this.arrowUp = new Arrow(this.game, this.game.width / 2, 26, 'arrowUp');
     this.arrowDown = new Arrow(this.game, this.game.width / 2, this.game.height - 26, 'arrowDown');
@@ -56,13 +55,13 @@ export default class LevelMenuState extends BackToMenuState {
         this.state.disablePageInput(this.state.curPage);
         this.state.curPage -= 1;
         this.state.enablePageInput(this.state.curPage);
-        this.changeArrow(this.curPage);
+        this.state.changeArrow(this.curPage);
       }
     } else if (this.state.curPage < this.state.maxPageSize) {
       this.state.disablePageInput(this.state.curPage);
       this.state.curPage += 1;
       this.state.enablePageInput(this.state.curPage);
-      this.changeArrow(this.curPage);
+      this.state.changeArrow(this.curPage);
     }
     this.state.game.add.tween(this.state.caseGroup).to({ y: -(this.state.curPage - 1) * 544 }, 200, 'Linear', true);
   }

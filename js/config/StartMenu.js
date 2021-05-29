@@ -126,7 +126,6 @@ const buttons = [
       },
     ],
   },
-
   {
     key: 'open',
     name: '排行',

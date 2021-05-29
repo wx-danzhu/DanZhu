@@ -2,7 +2,11 @@
 
 import Phaser from '../../libs/phaser-wx';
 import Common from '../atlas/common';
-import Pause from '../../objects/Pause';
+import Pause from '../objects/Pause';
+import Wall from '../objects/wall';
+
+const wallWidth = 10;
+const wallHeight = 50;
 
 export default class GameState extends Phaser.State {
   constructor(game) {
@@ -15,16 +19,26 @@ export default class GameState extends Phaser.State {
     audio.autoplay = autoplay;
     audio.loop = loop;
     audio.src = src;
+    audio.playIfNotMuted = (() => {
+      if (!this.game.mute) {
+        audio.play();
+      }
+    });
     if (!this.game.audio) {
       this.game.audio = {};
     }
     this.game.audio[name] = audio;
   }
 
+  destroyAudios() {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const audio of Object.values(this.game.audio)) {
+      audio.destroy();
+    }
+  }
+
   preload() {
-    this.game.load.image('bg', 'assets/plane/images/bg.jpg');
     this.game.load.image('cannon', 'assets/plane/images/hero.png');
-    this.game.load.image('wall', 'assets/rolling_ball/background_brown.png');
     this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
     this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
@@ -44,28 +58,44 @@ export default class GameState extends Phaser.State {
 
   create() {
     this.dragging = false;
+    this.canDrag = true;
 
     // start physics engine
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.bg = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'bg');
+    this.game.stage.backgroundColor = '#042960';
 
     this.game.input.onDown.add(this.dragStart, this);
     this.game.input.onUp.add(this.dragStop, this);
 
     // world walls
     this.wallGroup = this.game.add.group();
-    this.wallGroup.enableBody = true;
-    this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
-    this.wallTop = this.wallGroup.create(-80, -10, 'wall');
-    this.wallTop.scale.setTo(10, 1);
+    // this.wallGroup.enableBody = true;
+    // this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
+    // this.wallTop = this.wallGroup.create(-80, -10, 'wall');
+    // this.wallTop.scale.setTo(10, 1);
+    this.wallTop = new Wall(this.game, this.game.width / 2, 0, '#5DECBF');
+    this.wallTop.height = wallHeight + wallHeight;
+    this.wallTop.width = this.game.width + 10;
+    this.game.physics.arcade.enable(this.wallTop);
     this.wallTop.body.immovable = true;
-    this.wallLeft = this.wallGroup.create(-55, -10, 'wall');
-    this.wallLeft.scale.setTo(1, 15);
+    this.wallGroup.add(this.wallTop);
+    // this.wallLeft = this.wallGroup.create(-55, -10, 'wall');
+    // this.wallLeft.scale.setTo(1, 15);
+    this.wallLeft = new Wall(this.game, 0, this.game.height / 2, '#5DECBF');
+    this.wallLeft.height = this.game.height + 10;
+    this.wallLeft.width = wallWidth + wallWidth;
+    this.game.physics.arcade.enable(this.wallLeft);
     this.wallLeft.body.immovable = true;
-    this.wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
-    this.wallRight.scale.setTo(1, 15);
+    this.wallGroup.add(this.wallLeft);
+    // this.wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
+    // this.wallRight.scale.setTo(1, 15);
+    this.wallRight = new Wall(this.game, this.game.width, this.game.height / 2, '#5DECBF');
+    this.wallRight.height = this.game.height + 10;
+    this.wallRight.width = wallWidth + wallWidth;
+    this.game.physics.arcade.enable(this.wallRight);
     this.wallRight.body.immovable = true;
+    this.wallGroup.add(this.wallRight);
 
     // bricks
     this.brickGroup = this.game.add.group();
@@ -97,14 +127,14 @@ export default class GameState extends Phaser.State {
     // generate bricks
     this.generateBricks(this.map);
 
-    this.game.audio.bgm.play();
-
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
   }
 
   update() {
+    // play bgm here so that it starts after brought back from background
+    this.game.audio.bgm.playIfNotMuted();
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
     // detect collision between bullets and walls
@@ -194,19 +224,23 @@ export default class GameState extends Phaser.State {
     });
   }
 
-  dragStart() {
-    this.dragging = true;
+  dragStart(event) {
+    if (this.canDrag && event.y > this.wallTop.bottom) {
+      this.dragging = true;
+    }
   }
 
   dragStop() {
-    this.dragging = false;
-    this.shoot();
+    if (this.dragging) {
+      this.dragging = false;
+      this.shoot();
+    }
   }
 
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
-      this.game.audio.bullet.play();
+      this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
       const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
@@ -243,7 +277,7 @@ export default class GameState extends Phaser.State {
       anim.onComplete.add(() => {
         explosion.kill();
       }, this);
-      this.game.audio.boom.play();
+      this.game.audio.boom.playIfNotMuted();
     }
     const score = `${this.score}`;
     wx.setUserCloudStorage({
@@ -264,6 +298,7 @@ export default class GameState extends Phaser.State {
 
   // show pause menu, currently not working
   showPause() {
+    this.canDrag = false;
     this.game.paused = true;
     const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
     this.dialog = dialog;
@@ -312,9 +347,15 @@ export default class GameState extends Phaser.State {
       // continue button pressed
       this.dialog.destroy();
       this.game.paused = false;
+      this.game.input.onDown.remove(this.pausemenuDown, this);
+      this.game.time.events.add(Phaser.Timer.SECOND, () => {
+        this.canDrag = true;
+      });
     } else if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
       // back button pressed
       this.game.paused = false;
+      this.game.input.onDown.remove(this.pausemenuDown, this);
+      this.destroyAudios();
       this.game.state.start('menu');
     }
   }

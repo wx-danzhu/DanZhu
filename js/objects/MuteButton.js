@@ -1,8 +1,9 @@
 import Phaser from '../libs/phaser-wx';
 
-export default class Pause extends Phaser.Sprite {
-  constructor(game, x, y, texture) {
-    super(game, x, y, texture);
+export default class MuteButton extends Phaser.Sprite {
+  constructor(game, x, y, value = true) {
+    super(game, x, y, 'musicOn');
+    this.setValue(value);
     this.game = game;
     this.game.world.add(this);
 
@@ -15,7 +16,7 @@ export default class Pause extends Phaser.Sprite {
   }
 
   onDown() {
-    this.scale.setTo(1.5, 1.5);
+    this.scale.setTo(1.1, 1.1);
   }
 
   onUp() {
@@ -24,6 +25,14 @@ export default class Pause extends Phaser.Sprite {
 
   addClick(clickFn, context) {
     this.events.onInputUp.add(clickFn, context);
+  }
+
+  setValue(value) {
+    if (value) {
+      this.loadTexture('musicOn');
+    } else {
+      this.loadTexture('musicOff');
+    }
   }
 
   showAndHide(show) {
