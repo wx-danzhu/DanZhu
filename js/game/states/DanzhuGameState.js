@@ -43,6 +43,9 @@ export default class GameState extends Phaser.State {
     this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
     this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
+    this.game.load.image('oneStar', 'assets/plane/images/oneStar.jpg');
+    this.game.load.image('twoStars', 'assets/plane/images/twoStars.png');
+    this.game.load.image('threeStars', 'assets/plane/images/threeStars.jpg');
 
     this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
 
@@ -135,12 +138,12 @@ export default class GameState extends Phaser.State {
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
 
-        // set total health number
-        this.totalHealth = 0;
-        this.brickGroup.forEach(
-          (brick) => {
-            this.totalHealth += brick.health;
-          });
+    // set total health number
+    this.totalHealth = 0;
+    this.brickGroup.forEach(
+      (brick) => {
+        this.totalHealth += brick.health;
+      });
     //  console.log("printing total health");
     //  console.log(this.totalHealth);
 
@@ -253,7 +256,7 @@ export default class GameState extends Phaser.State {
 
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
-    if (!bullet) {
+    if (!bullet && this.bulletLeft >= 1) {
       this.bulletLeft = this.bulletLeft - 1;
       this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
@@ -270,12 +273,11 @@ export default class GameState extends Phaser.State {
           newBullet.scale.setTo(0.3, 0.3);
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
+          if (i === 9) {
+            newBullet.events.onKilled.add(this.checkGameStatus, this);
+          }
         }, this);
       }
-    }
-    // check bullet number
-    if (this.bulletLeft <= 0) {
-      this.gameEnd();
     }
   }
 
@@ -298,7 +300,7 @@ export default class GameState extends Phaser.State {
       }, this);
       this.game.audio.boom.playIfNotMuted();
     }
-    this.checkGameStatus();
+    //this.checkGameStatus();
   }
 
   // show pause menu, currently not working
@@ -367,88 +369,85 @@ export default class GameState extends Phaser.State {
 
   checkGameStatus() {
     if (this.totalHealth <= 0) {
-      setTimeout(() => {
-        this.goToNextGame();
-      }, 2000);
-    }
-    if (this.bulletLeft <= 0) {
-      setTimeout(() => {
-        this.gameEnd();
-      }, 2000);
+      this.goToNextGame();
+    } else if (this.bulletLeft <= 0) {
+      this.gameEnd();
     }
   }
 
-    // show goToNextGame menu
-    goToNextGame() {
-      this.game.audio.pass.playIfNotMuted();
-      this.canDrag = false;
-      this.game.paused = true;
-      const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
-      this.dialog = dialog;
-      dialog.anchor.setTo(0.5, 0.5);
-      dialog.scale.setTo(2.5, 2.5);
-  
-      const style = { font: '16px', fill: '#ffffff' };
-      const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
-      gameEndMenuText.anchor.setTo(0.5, 0.5);
-      gameEndMenuText.scale.setTo(0.7, 0.7);
-      dialog.addChild(gameEndMenuText);
+  // show goToNextGame menu
+  goToNextGame() {
+    this.game.audio.pass.playIfNotMuted();
+    this.canDrag = false;
+    this.game.paused = true;
+    const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+    this.dialog = dialog;
+    dialog.anchor.setTo(0.5, 0.5);
+    dialog.scale.setTo(2.5, 2.5);
 
-      const star = this.bulletLeft === 0 ? 1 : (this.bulletLeft === 1 ? 2 : 3);
-      const gameEndStarText = this.game.add.text(0, -8, '星数: ' + star, style);
-      gameEndStarText.anchor.setTo(0.5, 0.5);
-      gameEndStarText.scale.setTo(0.6, 0.6);
-      dialog.addChild(gameEndStarText);
-  
-      // 下一关
-      this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
-      this.nextLevelButton.anchor.setTo(0.5, 0.5);
-      this.nextLevelButton.scale.setTo(1.2, 0.7);
-      dialog.addChild(this.nextLevelButton);
-  
-      const nextLevelText = this.game.add.text(0, 2, '下一关', style);
-      nextLevelText.anchor.setTo(0.5, 0.5);
-      nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-      this.nextLevelButton.addChild(nextLevelText);
-  
-      // 返回
-      this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
-      this.backButton.anchor.setTo(0.5, 0.5);
-      this.backButton.scale.setTo(1.2, 0.7);
-      dialog.addChild(this.backButton);
-  
-      const backText = this.game.add.text(0, 2, '返回', style);
-      backText.anchor.setTo(0.5, 0.5);
-      backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-      this.backButton.addChild(backText);
-  
-      this.game.input.onDown.add(this.goToNextDown, this);
+    let starSign;
+    if (this.bulletLeft === 0) {
+      starSign = 'oneStar';
+    } else if (this.bulletLeft === 1) {
+      starSign = 'twoStars';
+    } else {
+      starSign = 'threeStars';
     }
-  
-    goToNextDown(event) {
-      if (!this.game.paused) {
-        return;
-      }
-      const goToNextBonuds = this.nextLevelButton.getBounds();
-      const backBonuds = this.backButton.getBounds();
-      if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
-        // back button pressed
-        this.game.paused = false;
-        this.game.input.onDown.remove(this.gameEndMenuDown, this);
-        this.destroyAudios();
-        this.game.state.start('menu');
-      } else if (Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
-        // go to next level
-        this.game.paused = false;
-        this.game.input.onDown.remove(this.goToNextDown, this);
-        this.destroyAudios();
-        const list = Buttons[1].children;
-        this.state.game.state.start(
-          'danzhuGame',
-          true, false, list[this.levelIndex].key);
-  
-      }
+    const starImage = this.game.add.sprite(2, -35, starSign, starSign);
+    starImage.anchor.setTo(0.5, 0.5);
+    starImage.scale.setTo(0.05, 0.05);
+    dialog.addChild(starImage);
+
+    // 下一关
+    this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
+    this.nextLevelButton.anchor.setTo(0.5, 0.5);
+    this.nextLevelButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.nextLevelButton);
+
+    const style = { font: '16px', fill: '#ffffff' };
+    const nextLevelText = this.game.add.text(0, 2, '下一关', style);
+    nextLevelText.anchor.setTo(0.5, 0.5);
+    nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.nextLevelButton.addChild(nextLevelText);
+
+    // 返回
+    this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+    this.backButton.anchor.setTo(0.5, 0.5);
+    this.backButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.backButton);
+
+    const backText = this.game.add.text(0, 2, '返回', style);
+    backText.anchor.setTo(0.5, 0.5);
+    backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.backButton.addChild(backText);
+
+    this.game.input.onDown.add(this.goToNextDown, this);
+  }
+
+  goToNextDown(event) {
+    if (!this.game.paused) {
+      return;
     }
+    const goToNextBonuds = this.nextLevelButton.getBounds();
+    const backBonuds = this.backButton.getBounds();
+    if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+      // back button pressed
+      this.game.paused = false;
+      this.game.input.onDown.remove(this.gameEndMenuDown, this);
+      this.destroyAudios();
+      this.game.state.start('menu');
+    } else if (Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
+      // go to next level
+      this.game.paused = false;
+      this.game.input.onDown.remove(this.goToNextDown, this);
+      this.destroyAudios();
+      const list = Buttons[1].children;
+      this.state.game.state.start(
+        'danzhuGame',
+        true, false, list[this.levelIndex].key);
+
+    }
+  }
 
   // show gameEnd menu
   gameEnd() {

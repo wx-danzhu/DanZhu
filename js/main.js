@@ -3,6 +3,7 @@
 
 import Phaser from './libs/phaser-wx';
 import Boot from './boot/index';
+//import { DanzhuGame, InfiniteGame } from './game/index';
 import DanzhuGame from './game/index';
 import InfiniteGame from './game/index';
 import OpenExamples from './open/index';

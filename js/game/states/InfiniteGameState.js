@@ -56,7 +56,7 @@ export default class InfiniteGameState extends Phaser.State {
   init(parameters) {
     if (parameters) {
       this.map = parameters.map;
-      this.level = level;
+      this.level = parameters.level;
       this.score = parameters.score;
       this.bullet = parameters.bullet;
     }
@@ -128,7 +128,7 @@ export default class InfiniteGameState extends Phaser.State {
 
     // bullet left
     this.bulletLeft = this.bullet;
-    this.bulletText = this.game.add.text(140, 15, `Bullet: ${this.bulletLeft}`, style);
+    this.bulletText = this.game.add.text(150, 15, `Bullet: ${this.bulletLeft}`, style);
 
     // generate bricks
     this.generateBricks(this.map);
@@ -144,15 +144,14 @@ export default class InfiniteGameState extends Phaser.State {
     this.totalHealth = 0;
     this.brickGroup.forEach(
       (brick) => {
-        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
         this.totalHealth += brick.health;
       });
     this.bombGroup.forEach(
       (bomb) => {
         this.totalHealth += bomb.health;
       });
-    // console.log("printing total health");
-    // console.log(this.totalHealth);
+    console.log("printing total health");
+    console.log(this.totalHealth);
   }
 
   update() {
@@ -249,16 +248,16 @@ export default class InfiniteGameState extends Phaser.State {
     });
   }
   generateBombs() {
-    const start_pos_x = this.wallLeft.right;
-    const start_pos_y = this.wallTop.bottom;
-    const end_pos_x = this.wallRight.left;
-    const bomb_len = (end_pos_x - start_pos_x) / 10;
+    const startPosX = this.wallLeft.right;
+    const startPosY = this.wallTop.bottom;
+    const endPosX = this.wallRight.left;
+    const bombLen = (endPosX - startPosX) / 10;
 
     let locations = [];
     if (Math.random() < 0.3) {
       let num = Math.floor(Math.random() * 111);
       locations = [[Math.floor(num / 10), num % 10]];
-      let coord = [start_pos_x + locations[0][0] * bomb_len, start_pos_y + locations[0][1] * bomb_len];
+      let coord = [startPosX + locations[0][0] * bombLen, startPosY + locations[0][1] * bombLen];
       while (this.isOccupied(coord)) {
         num = Math.floor(Math.random() * 111);
         locations = [[Math.floor(num / 10), num % 10]];
@@ -269,7 +268,7 @@ export default class InfiniteGameState extends Phaser.State {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
         return;
       }
-      const bomb = this.bombGroup.create(start_pos_x + location[0] * bomb_len, start_pos_y + location[1] * bomb_len, 'bomb');
+      const bomb = this.bombGroup.create(startPosX + location[0] * bomb_len, startPosY + location[1] * bomb_len, 'bomb');
       bomb.body.immovable = true;
       bomb.health = 1;
       bomb.anchor.setTo(0, 0);
@@ -320,15 +319,14 @@ export default class InfiniteGameState extends Phaser.State {
         }
       }
     );
-    this.checkGameStatus();
   }
 
   killBrick(brick) {
     const healthLeft = brick.health;
     this.score += healthLeft;
-    this.scoreText.text = this.score + '';
+    this.scoreText.text = `Score: ${this.score}`;
     this.totalHealth -= healthLeft;
-    brick.health == 0;
+    brick.health = 0;
     brick.kill();
     var explosion = this.explosionGroup.getFirstExists(false);
     if (!explosion) {
@@ -358,17 +356,13 @@ export default class InfiniteGameState extends Phaser.State {
         console.log(`save score ${score} fail`);
       },
     });
-    this.checkGameStatus();
   }
 
   checkGameStatus() {
     if (this.totalHealth <= 0) {
       this.goToNextGame();
-    }
-    if (this.bulletLeft <= 0) {
-      setTimeout(() => {
-        this.gameEnd();
-      }, 4000);
+    } else if (this.bulletLeft <= 0) {
+      this.gameEnd();
     }
   }
 
@@ -401,8 +395,8 @@ export default class InfiniteGameState extends Phaser.State {
 
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
-    if (!bullet) {
-      this.bulletLeft--;
+    if (!bullet && this.bulletLeft >= 1) {
+      this.bulletLeft = this.bulletLeft - 1;
       this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
@@ -419,16 +413,18 @@ export default class InfiniteGameState extends Phaser.State {
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
         }, this);
+        if (i === 9) {
+          newBullet.events.onKilled.add(this.checkGameStatus, this);
+        }
       }
-      this.checkGameStatus();
     }
   }
 
   hit(brick) {
     this.score += 1;
-    this.scoreText.text = `${this.score}`;
+    this.scoreText.text = `Score: ${this.score}`;
     brick.damage(1);
-
+    this.totalHealth -= 1;
     
     if (brick.health <= 0) {
       brick.kill();
@@ -461,7 +457,6 @@ export default class InfiniteGameState extends Phaser.State {
         console.log(`save score ${score} fail`);
       },
     });
-    this.checkGameStatus();
   }
 
   // show pause menu
