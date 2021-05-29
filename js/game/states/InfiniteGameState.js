@@ -4,6 +4,7 @@ import Phaser from '../../libs/phaser-wx';
 import Common from '../atlas/common';
 import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
+import generateMap from '../../utils/MapGenerator';
 
 const wallWidth = 10;
 const wallHeight = 50;
@@ -54,6 +55,8 @@ export default class InfiniteGameState extends Phaser.State {
   init(parameters) {
     if (parameters) {
       this.map = parameters.map;
+      this.score = parameters.score;
+      this.bullet = parameters.bullet;
     }
   }
 
@@ -118,9 +121,12 @@ export default class InfiniteGameState extends Phaser.State {
     this.aimingLineGroup = this.game.add.group();
 
     // score
-    const style = { font: '32px', fill: '#ffffff' };
-    this.score = 0;
-    this.scoreText = this.game.add.text(15, 15, `${this.score}`, style);
+    const style = { font: '24px', fill: '#ffffff' };
+    this.scoreText = this.game.add.text(40, 15, `Score: ${this.score}`, style);
+
+    // bullet left
+    this.bulletLeft = this.bullet;
+    this.bulletText = this.game.add.text(140, 15, `Bullet: ${this.bulletLeft}`, style);
 
     // generate bricks
     this.generateBricks(this.map);
@@ -131,6 +137,15 @@ export default class InfiniteGameState extends Phaser.State {
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
+
+    // set total health number
+    this.totalHealth = 10;
+    this.brickGroup.forEach(
+			(brick) => {
+        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+        this.totalHealth += brick.health;
+      });
+    this.totalHealth -= 10;
   }
 
   update() {
@@ -253,7 +268,7 @@ export default class InfiniteGameState extends Phaser.State {
 			bomb.anchor.setTo(0, 0);
 			bomb.height = bomb_len;
 			bomb.width = bomb_len;
-		});
+    });
   }
 
   isOccupied(location) {
@@ -272,7 +287,8 @@ export default class InfiniteGameState extends Phaser.State {
 	hitBomb(bomb, bullet) {
 		const xpos = bomb.x;
 		const ypos = bomb.y;
-		bomb.health--;
+    bomb.health--;
+    this.totalHealth--;
 		if (bomb.health <= 0) {
 			bomb.kill();
     }
@@ -296,13 +312,15 @@ export default class InfiniteGameState extends Phaser.State {
 						this.killBrick(brick);
 				}
 			}
-		);
+    );
+    this.checkGameStatus();
   }
 
 	killBrick(brick) {
 		const healthLeft = brick.health;
 		this.score += healthLeft;
-		this.scoreText.text = this.score + '';
+    this.scoreText.text = this.score + '';
+    this.totalHealth -= healthLeft;
 		brick.health == 0;
 		brick.kill();
 		var explosion = this.explosionGroup.getFirstExists(false);
@@ -332,8 +350,32 @@ export default class InfiniteGameState extends Phaser.State {
         // eslint-disable-next-line no-console
         console.log(`save score ${score} fail`);
       },
-		});
-	}
+    });
+    this.checkGameStatus();
+  }
+  
+  checkGameStatus() {
+    if (this.totalHealth <= 0) {
+      this.goToNextGame();
+    }
+    if (this.bulletLeft <= 0) {
+      setTimeout(() => {
+        this.gameEnd();
+      }, 4000);
+    }
+  }
+
+  goToNextGame() {
+    setTimeout(() => {
+      // show some animation here
+      this.state.game.state.start('infiniteGame', true, false,
+      {
+        map: generateMap(),
+        score: this.score,
+        bullet: this.bulletLeft + 10,
+      });
+    }, 4000);
+  }
 
   dragStart(event) {
     if (this.canDrag && event.y > this.wallTop.bottom) {
@@ -351,6 +393,8 @@ export default class InfiniteGameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
+      this.bulletLeft--;
+      this.bulletText.text =`Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
@@ -367,6 +411,7 @@ export default class InfiniteGameState extends Phaser.State {
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
         }, this);
       }
+      this.checkGameStatus();
     }
   }
 
@@ -374,6 +419,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.score += 1;
     this.scoreText.text = `${this.score}`;
     brick.damage(1);
+    this.totalHealth--;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
@@ -405,9 +451,10 @@ export default class InfiniteGameState extends Phaser.State {
         console.log(`save score ${score} fail`);
       },
     });
+    this.checkGameStatus();
   }
 
-  // show pause menu, currently not working
+  // show pause menu
   showPause() {
     this.canDrag = false;
     this.game.paused = true;
@@ -470,4 +517,53 @@ export default class InfiniteGameState extends Phaser.State {
       this.game.state.start('menu');
     }
   }
+
+    // show gameEnd menu
+    gameEnd() {
+      this.canDrag = false;
+      this.game.paused = true;
+      const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
+      this.dialog = dialog;
+      dialog.anchor.setTo(0.5, 0.5);
+      dialog.scale.setTo(2.5, 2.5);
+  
+      const style = { font: '16px', fill: '#ffffff' };
+      const gameEndMenuText = this.game.add.text(2, -35, '游戏结束', style);
+      gameEndMenuText.anchor.setTo(0.5, 0.5);
+      gameEndMenuText.scale.setTo(0.7, 0.7);
+      dialog.addChild(gameEndMenuText);
+  
+      const gameEndScoreText = this.game.add.text(0, -8, '得分: ' + this.score, style);
+      gameEndScoreText.anchor.setTo(0.5, 0.5);
+      gameEndScoreText.scale.setTo(0.6, 0.6);
+      dialog.addChild(gameEndScoreText);
+  
+      // 返回
+      this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+      this.backButton.anchor.setTo(0.5, 0.5);
+      this.backButton.scale.setTo(1.2, 0.7);
+      dialog.addChild(this.backButton);
+  
+      const backText = this.game.add.text(0, 2, '返回', style);
+      backText.anchor.setTo(0.5, 0.5);
+      backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+      this.backButton.addChild(backText);
+  
+      this.game.input.onDown.add(this.gameEndMenuDown, this);
+    }
+  
+    gameEndMenuDown(event) {
+      if (!this.game.paused) {
+        return;
+      }
+      const backBonuds = this.backButton.getBounds();
+      if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
+        // back button pressed
+        this.game.paused = false;
+        this.game.input.onDown.remove(this.gameEndMenuDown, this);
+        this.destroyAudios();
+        this.game.state.start('menu');
+      }
+    }
+
 }
