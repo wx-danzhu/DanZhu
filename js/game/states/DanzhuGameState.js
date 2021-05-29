@@ -123,17 +123,13 @@ export default class GameState extends Phaser.State {
     // aiming lines
     this.aimingLineGroup = this.game.add.group();
 
-    // score
-    const style = { font: '32px', fill: '#ffffff' };
-    this.score = 0;
-    this.scoreText = this.game.add.text(15, 15, `${this.score}`, style);
-
     // generate bricks
     this.generateBricks(this.map);
 
     // bullet left
+    const style = { font: '24px', fill: '#ffffff' };
     this.bulletLeft = 5;
-    this.bulletText = this.game.add.text(140, 15, `Bullet: ${this.bulletLeft}`, style);
+    this.bulletText = this.game.add.text(50, 15, `Bullet: ${this.bulletLeft}`, style);
 
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
@@ -284,8 +280,6 @@ export default class GameState extends Phaser.State {
   }
 
   hit(brick) {
-    this.score += 1;
-    this.scoreText.text = `${this.score}`;
     brick.damage(1);
     this.totalHealth--;
     if (brick.health <= 0) {
@@ -304,21 +298,6 @@ export default class GameState extends Phaser.State {
       }, this);
       this.game.audio.boom.playIfNotMuted();
     }
-    const score = `${this.score}`;
-    wx.setUserCloudStorage({
-      KVDataList: [{
-        key: 'score',
-        value: score,
-      }],
-      success() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} success`);
-      },
-      fail() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} fail`);
-      },
-    });
     this.checkGameStatus();
   }
 
@@ -416,10 +395,10 @@ export default class GameState extends Phaser.State {
       dialog.addChild(gameEndMenuText);
 
       const star = this.bulletLeft == 0 ? 1 : this.bulletLeft == 1 ? 2 : 3;
-      const gameEndScoreText = this.game.add.text(0, -8, '星数: ' + star, style);
-      gameEndScoreText.anchor.setTo(0.5, 0.5);
-      gameEndScoreText.scale.setTo(0.6, 0.6);
-      dialog.addChild(gameEndScoreText);
+      const gameEndStarText = this.game.add.text(0, -8, '星数: ' + star, style);
+      gameEndStarText.anchor.setTo(0.5, 0.5);
+      gameEndStarText.scale.setTo(0.6, 0.6);
+      dialog.addChild(gameEndStarText);
   
       // 下一关
       this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
