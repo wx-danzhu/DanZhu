@@ -76,7 +76,7 @@ export default class MenuState extends Phaser.State {
       {
         map: generateMap(),
         score: 0,
-        bullet: 10,
+        bullet: 6,
       });
   }
 

@@ -50,6 +50,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
     this.createAudio('boom', 'assets/plane/audio/boom.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
+    this.createAudio('pass', 'assets/plane/audio/pass.mp3');
   }
 
   init(parameters) {
@@ -139,13 +140,19 @@ export default class InfiniteGameState extends Phaser.State {
     this.pause.addClick(this.showPause, this);
 
     // set total health number
-    this.totalHealth = 10;
+    this.totalHealth = 0;
     this.brickGroup.forEach(
 			(brick) => {
         // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
         this.totalHealth += brick.health;
       });
-    this.totalHealth -= 10;
+      this.bombGroup.forEach(
+        (bomb) => {
+          // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+          this.totalHealth += bomb.health;
+        });
+      console.log("printing total health");
+      console.log(this.totalHealth);
   }
 
   update() {
@@ -304,7 +311,7 @@ export default class InfiniteGameState extends Phaser.State {
 		anim.onComplete.add(function () {
 			explosion.kill();
 		}, this);
-		this.game.audio.boom.play();
+		this.game.audio.boom.playIfNotMuted();
 		this.brickGroup.forEach(
 			(brick) => {
 				// console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
@@ -335,7 +342,7 @@ export default class InfiniteGameState extends Phaser.State {
 		anim.onComplete.add(function () {
 			explosion.kill();
 		}, this);
-		this.game.audio.boom.play();
+		this.game.audio.boom.playIfNotMuted();
 		const score = this.score + '';
 		wx.setUserCloudStorage({
 			KVDataList: [{
@@ -366,8 +373,10 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   goToNextGame() {
+    this.game.audio.pass.playIfNotMuted();
     setTimeout(() => {
       // show some animation here
+      this.game.audio.pass.playIfNotMuted();
       this.state.game.state.start('infiniteGame', true, false,
       {
         map: generateMap(),
