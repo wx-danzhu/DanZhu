@@ -4,6 +4,7 @@ import ShortRect from '../objects/ShortRect';
 import LongRect from '../objects/LongRect';
 import Title from '../objects/Title';
 import About from '../objects/About';
+import MuteButton from '../objects/MuteButton';
 
 export default class MenuState extends Phaser.State {
   constructor(game) {
@@ -45,10 +46,28 @@ export default class MenuState extends Phaser.State {
     this.exampleGroup.add(about);
     about.addClick(this.clickRankRect, { state: this, properties: Buttons[5] });
 
+    this.muteButton = new MuteButton(
+      this.game,
+      levelRect.left + 20, levelRect.bottom + 30,
+      !this.game.mute,
+    );
+    this.exampleGroup.add(this.muteButton);
+    this.muteButton.addClick(this.clickMuteButton, this);
+
     this.exampleGroup.forEach((child) => {
       // eslint-disable-next-line no-param-reassign
       child.inputEnabled = true;
     });
+  }
+
+  clickMuteButton() {
+    if (!this.game.mute) {
+      this.game.mute = true;
+      this.muteButton.setValue(false);
+    } else {
+      this.game.mute = false;
+      this.muteButton.setValue(true);
+    }
   }
 
   clickRect() {

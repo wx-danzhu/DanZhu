@@ -19,10 +19,22 @@ export default class GameState extends Phaser.State {
     audio.autoplay = autoplay;
     audio.loop = loop;
     audio.src = src;
+    audio.playIfNotMuted = (() => {
+      if (!this.game.mute) {
+        audio.play();
+      }
+    });
     if (!this.game.audio) {
       this.game.audio = {};
     }
     this.game.audio[name] = audio;
+  }
+
+  destroyAudios() {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const audio of Object.values(this.game.audio)) {
+      audio.destroy();
+    }
   }
 
   preload() {
@@ -115,14 +127,14 @@ export default class GameState extends Phaser.State {
     // generate bricks
     this.generateBricks(this.map);
 
-    this.game.audio.bgm.play();
-
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
   }
 
   update() {
+    // play bgm here so that it starts after brought back from background
+    this.game.audio.bgm.playIfNotMuted();
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
     // detect collision between bullets and walls
@@ -228,7 +240,7 @@ export default class GameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
-      this.game.audio.bullet.play();
+      this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
       const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
@@ -265,7 +277,7 @@ export default class GameState extends Phaser.State {
       anim.onComplete.add(() => {
         explosion.kill();
       }, this);
-      this.game.audio.boom.play();
+      this.game.audio.boom.playIfNotMuted();
     }
     const score = `${this.score}`;
     wx.setUserCloudStorage({
@@ -343,6 +355,7 @@ export default class GameState extends Phaser.State {
       // back button pressed
       this.game.paused = false;
       this.game.input.onDown.remove(this.pausemenuDown, this);
+      this.destroyAudios();
       this.game.state.start('menu');
     }
   }
