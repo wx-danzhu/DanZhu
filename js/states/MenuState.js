@@ -75,8 +75,9 @@ export default class MenuState extends Phaser.State {
     this.state.game.state.start('infiniteGame', true, false,
       {
         map: generateMap(),
+        level: 1,
         score: 0,
-        bullet: 6,
+        bullet: 10,
       });
   }
 

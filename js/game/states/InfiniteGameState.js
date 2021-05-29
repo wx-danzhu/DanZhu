@@ -56,6 +56,7 @@ export default class InfiniteGameState extends Phaser.State {
   init(parameters) {
     if (parameters) {
       this.map = parameters.map;
+      this.level = level;
       this.score = parameters.score;
       this.bullet = parameters.bullet;
     }
@@ -379,7 +380,8 @@ export default class InfiniteGameState extends Phaser.State {
       this.game.audio.pass.playIfNotMuted();
       this.state.game.state.start('infiniteGame', true, false,
         {
-          map: generateMap(),
+          map: generateMap(this.level + 1),
+          level: this.level + 1,
           score: this.score,
           bullet: this.bulletLeft + 10,
         });
