@@ -254,7 +254,7 @@ export default class GameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet) {
-      this.bulletLeft--;
+      this.bulletLeft = this.bulletLeft - 1;
       this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
@@ -281,7 +281,7 @@ export default class GameState extends Phaser.State {
 
   hit(brick) {
     brick.damage(1);
-    this.totalHealth--;
+    this.totalHealth = this.totalHealth - 1;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
