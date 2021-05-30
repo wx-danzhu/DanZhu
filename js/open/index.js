@@ -1,7 +1,7 @@
 import PIXI from '../libs/pixi-wx';
 import Phaser from '../libs/phaser-wx';
 
-import OpenShowRankingListState from './OpenShowRankingListState';
+import RankingListState from './RankingListState';
 
 export default class OpenExamples {
   constructor(game) {
@@ -9,6 +9,6 @@ export default class OpenExamples {
       new PIXI.BaseTexture(xCanvas), new PIXI.Rectangle(x, y, w, h),
     );
 
-    game.state.add('openShowRankingList', new OpenShowRankingListState(game));
+    game.state.add('rankinglist', new RankingListState(game));
   }
 }

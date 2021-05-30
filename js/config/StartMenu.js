@@ -135,13 +135,7 @@ const buttons = [
   {
     key: 'open',
     name: '排行',
-    state: 'openShowRankingList',
-    children: [
-      {
-        name: 'show ranking list',
-        state: 'openShowRankingList',
-      },
-    ],
+    state: 'rankinglist',
   },
   {
     key: 'title',
