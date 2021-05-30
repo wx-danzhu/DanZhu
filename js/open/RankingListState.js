@@ -20,8 +20,9 @@ export default class OpenShowRankingListState extends BackToMenuState {
     this.sharedCanvas = this.openDataContext.canvas;
 
     const text = '好友排行';
-    const style = { font: '32px Arial', fill: '#17202A', align: 'center' };
-    this.t = this.game.add.text(this.game.world.centerX - 160, 50, text, style);
+    const style = { font: '32px Arial', fill: '#17202A' };
+    this.t = this.game.add.text(this.game.world.centerX, 70, text, style);
+    this.t.anchor.setTo(0.5, 0.5);
     this.t.inputEnabled = true;
     this.listener();
   }
@@ -33,15 +34,12 @@ export default class OpenShowRankingListState extends BackToMenuState {
   }
 
   listener() {
-    const openDataContext = wx.getOpenDataContext();
     this.openDataContext.postMessage({
       action: 'SHOW_RANKING_LIST',
     });
 
-    const sharedCanvas = openDataContext.canvas;
+    const sharedCanvas = this.openDataContext.canvas;
 
-    setTimeout(() => {
-      this.game.add.sprite(0, 100, Phaser.XTexture(sharedCanvas, 0, 0, 375, 667));
-    }, 1000);
+    this.game.add.sprite(0, 100, Phaser.XTexture(sharedCanvas, 0, 0, 375, 667));
   }
 }
