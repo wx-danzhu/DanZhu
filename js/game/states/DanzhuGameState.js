@@ -2,7 +2,7 @@
 
 import Phaser from '../../libs/phaser-wx';
 import Pause from '../objects/Pause';
-import Wall from '../objects/wall';
+import Wall from '../objects/Wall';
 import Buttons from '../../config/StartMenu';
 
 const wallWidth = 10;
@@ -10,6 +10,7 @@ const wallHeight = 50;
 
 const initialShotNumber = 20;
 const bulletsPerShot = 10;
+const defaultBrickHealth = 10;
 
 function calculateStarNumber(bulletNumber) {
   if (bulletNumber / (initialShotNumber * bulletsPerShot) > 0.5) {
@@ -222,10 +223,21 @@ export default class GameState extends Phaser.State {
       }
       const brick = this.brickGroup.create(startPosX + location[0] * brickLen, startPosY + location[1] * brickLen, 'brick');
       brick.body.immovable = true;
-      brick.health = 10;
+      if (location.length > 2) {
+        // eslint-disable-next-line prefer-destructuring
+        brick.health = location[2];
+      } else {
+        brick.health = defaultBrickHealth;
+      }
       brick.anchor.setTo(0, 0);
       brick.height = brickLen;
       brick.width = brickLen;
+
+      const textStyle = { font: '20px Courier', fill: '#f0f0f0' };
+      brick.healthText = this.game.add.text(0, 0, `${brick.health}`, textStyle);
+      brick.healthText.anchor.set(0.5);
+      brick.healthText.x = Math.floor(brick.x + brick.width / 2 + 1);
+      brick.healthText.y = Math.floor(brick.y + brick.height / 2 + 4);
     });
   }
 
@@ -279,8 +291,11 @@ export default class GameState extends Phaser.State {
 
   hit(brick) {
     brick.damage(1);
+    // eslint-disable-next-line no-param-reassign
+    brick.healthText.text = `${brick.health}`;
     if (brick.health <= 0) {
       brick.kill();
+      brick.healthText.destroy();
       let explosion = this.explosionGroup.getFirstExists(false);
       if (!explosion) {
         explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
