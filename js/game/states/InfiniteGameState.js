@@ -128,7 +128,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.generateBricks(this.map);
 
     // generate bombs
-    this.generateBombs(this.map);
+    this.generateBombs();
 
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
@@ -230,22 +230,22 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   generateBombs() {
+    if (Math.random() > 0.3) {
+      return;
+    }
     const startPosX = this.wallLeft.right;
     const startPosY = this.wallTop.bottom;
     const endPosX = this.wallRight.left;
     const bombLen = (endPosX - startPosX) / 10;
 
-    let locations = [];
-    if (Math.random() < 0.3) {
-      let num = Math.floor(Math.random() * 111);
-      locations = [[Math.floor(num / 10), num % 10]];
-      const coord = [startPosX + locations[0][0] * bombLen, startPosY
-        + locations[0][1] * bombLen];
-      while (this.isOccupied(coord)) {
-        num = Math.floor(Math.random() * 111);
-        locations = [[Math.floor(num / 10), num % 10]];
-      }
-    }
+    const locations = [];
+    let coord;
+    do {
+      const randX = Math.floor(Math.random() * 10);
+      const randY = Math.floor(Math.random() * 10);
+      coord = [randX, randY];
+    } while (this.isOccupied(coord));
+    locations.push(coord);
 
     locations.forEach((location) => {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
@@ -261,11 +261,11 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   isOccupied(location) {
-    let occupied = true;
+    let occupied = false;
     this.brickGroup.forEach(
       (brick) => {
         if (location[0] === brick.x && location[1] === brick.y) {
-          occupied = false;
+          occupied = true;
         }
       },
     );
