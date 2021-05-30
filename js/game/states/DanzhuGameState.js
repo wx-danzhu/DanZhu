@@ -9,7 +9,8 @@ import Buttons from '../../config/StartMenu';
 const wallWidth = 10;
 const wallHeight = 50;
 
-const initialBulletNumber = 20;
+const initialShotNumber = 20;
+const bulletsPerShot = 10;
 
 export default class GameState extends Phaser.State {
   constructor(game) {
@@ -133,8 +134,8 @@ export default class GameState extends Phaser.State {
 
     // bullet left
     const style = { font: '24px', fill: '#ffffff' };
-    this.bulletLeft = initialBulletNumber;
-    this.bulletText = this.game.add.text(50, 15, `Bullet: ${this.bulletLeft}`, style);
+    this.bulletLeft = initialShotNumber * bulletsPerShot;
+    this.bulletText = this.game.add.text(50, 15, `子弹: ${this.bulletLeft}`, style);
 
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
@@ -249,13 +250,11 @@ export default class GameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet && this.bulletLeft >= 1) {
-      this.bulletLeft -= 1;
-      this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
       const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
-      for (let i = 0; i < 10; i += 1) {
+      for (let i = 0; i < bulletsPerShot; i += 1) {
         this.game.time.events.add((Phaser.Timer.SECOND / 10) * i, () => {
           const newBullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
           newBullet.body.bounce.set(1);
@@ -266,6 +265,8 @@ export default class GameState extends Phaser.State {
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
           newBullet.events.onKilled.add(this.checkGameStatus, this);
+          this.bulletLeft -= 1;
+          this.bulletText.text = `子弹: ${this.bulletLeft}`;
         }, this);
       }
     }
@@ -405,9 +406,9 @@ export default class GameState extends Phaser.State {
     this.game.input.onDown.add(this.goToNextDown, this);
 
     let starSign;
-    if (this.bulletLeft / initialBulletNumber > 0.5) {
+    if (this.bulletLeft / (initialShotNumber * bulletsPerShot) > 0.5) {
       starSign = 'threeStars';
-    } else if (this.bulletLeft / initialBulletNumber > 0.25) {
+    } else if (this.bulletLeft / (initialShotNumber * bulletsPerShot) > 0.25) {
       starSign = 'twoStars';
     } else {
       starSign = 'oneStar';
