@@ -40,6 +40,12 @@ export default class OpenShowRankingListState extends BackToMenuState {
 
     const sharedCanvas = this.openDataContext.canvas;
 
-    this.game.add.sprite(0, 100, Phaser.XTexture(sharedCanvas, 0, 0, 375, 667));
+    const canvasSprite = this.game.add.sprite(
+      0,
+      100,
+      Phaser.XTexture(sharedCanvas, 0, 0, 375, 667),
+    );
+    canvasSprite.width = 375;
+    canvasSprite.height = 667;
   }
 }
