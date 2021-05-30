@@ -31,7 +31,7 @@ const buttons = [
           /**
  *inner bricks has twice the health, the core brick has thre times the health
  */
-index: 2,
+          index: 2,
           map: [
             [0, 0],
             [0, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1],

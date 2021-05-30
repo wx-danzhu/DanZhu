@@ -9,7 +9,7 @@ function generateMap(stage) {
   if (brickNum > 40) {
     brickNum = 40;
   }
-  for (let i = 0; i < brickNum ; i += 1) { // a proportion of level input
+  for (let i = 0; i < brickNum; i += 1) { // a proportion of level input
     let num = Math.floor(Math.random() * 111);
     while (set.has(num)) {
       num = Math.floor(Math.random() * 111);

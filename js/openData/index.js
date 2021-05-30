@@ -27,8 +27,8 @@ wx.onMessage((data) => {
           }
           wx.setUserCloudStorage({
             KVDataList: [{
-              key: "score",
-              value: maxScore + '',
+              key: 'score',
+              value: `${maxScore}`,
             }],
             success() {
               // eslint-disable-next-line no-console

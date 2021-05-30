@@ -143,10 +143,10 @@ export default class GameState extends Phaser.State {
     this.brickGroup.forEach(
       (brick) => {
         this.totalHealth += brick.health;
-      });
+      },
+    );
     //  console.log("printing total health");
     //  console.log(this.totalHealth);
-
   }
 
   update() {
@@ -257,7 +257,7 @@ export default class GameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet && this.bulletLeft >= 1) {
-      this.bulletLeft = this.bulletLeft - 1;
+      this.bulletLeft -= 1;
       this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
@@ -283,7 +283,7 @@ export default class GameState extends Phaser.State {
 
   hit(brick) {
     brick.damage(1);
-    this.totalHealth = this.totalHealth - 1;
+    this.totalHealth -= 1;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
@@ -300,7 +300,7 @@ export default class GameState extends Phaser.State {
       }, this);
       this.game.audio.boom.playIfNotMuted();
     }
-    //this.checkGameStatus();
+    // this.checkGameStatus();
   }
 
   // show pause menu, currently not working
@@ -444,8 +444,8 @@ export default class GameState extends Phaser.State {
       const list = Buttons[1].children;
       this.state.game.state.start(
         'danzhuGame',
-        true, false, list[this.levelIndex].key);
-
+        true, false, list[this.levelIndex].key,
+      );
     }
   }
 
@@ -507,7 +507,6 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.state.game.state.start('danzhuGame', true, false, this.levelKey);
-
     }
   }
 }

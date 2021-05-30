@@ -145,11 +145,13 @@ export default class InfiniteGameState extends Phaser.State {
     this.brickGroup.forEach(
       (brick) => {
         this.totalHealth += brick.health;
-      });
+      },
+    );
     this.bombGroup.forEach(
       (bomb) => {
         this.totalHealth += bomb.health;
-      });
+      },
+    );
     // console.log("printing total health");
     // console.log(this.totalHealth);
   }
@@ -247,6 +249,7 @@ export default class InfiniteGameState extends Phaser.State {
       brick.width = brickLen;
     });
   }
+
   generateBombs() {
     const startPosX = this.wallLeft.right;
     const startPosY = this.wallTop.bottom;
@@ -257,13 +260,13 @@ export default class InfiniteGameState extends Phaser.State {
     if (Math.random() < 0.3) {
       let num = Math.floor(Math.random() * 111);
       locations = [[Math.floor(num / 10), num % 10]];
-      let coord = [startPosX + locations[0][0] * bombLen, startPosY
+      const coord = [startPosX + locations[0][0] * bombLen, startPosY
         + locations[0][1] * bombLen];
       while (this.isOccupied(coord)) {
         num = Math.floor(Math.random() * 111);
         locations = [[Math.floor(num / 10), num % 10]];
       }
-    };
+    }
 
     locations.forEach((location) => {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
@@ -285,8 +288,7 @@ export default class InfiniteGameState extends Phaser.State {
         if (location[0] === brick.x && location[1] === brick.y) {
           occupied = false;
         }
-        return;
-      }
+      },
     );
     return occupied;
   }
@@ -299,16 +301,16 @@ export default class InfiniteGameState extends Phaser.State {
     if (bomb.health <= 0) {
       bomb.kill();
     }
-    var explosion = this.explosionGroup.getFirstExists(false);
+    let explosion = this.explosionGroup.getFirstExists(false);
     if (!explosion) {
       explosion = this.explosionGroup.create(bomb.x, bomb.y, 'explosion');
       explosion.anchor.setTo(0.5, 0.5);
     } else {
       explosion.reset(bomb.x, bomb.y);
     }
-    var anim = explosion.animations.add('explosion');
+    const anim = explosion.animations.add('explosion');
     anim.play('explosion', 20);
-    anim.onComplete.add(function () {
+    anim.onComplete.add(() => {
       explosion.kill();
     }, this);
     this.game.audio.boom.playIfNotMuted();
@@ -318,7 +320,7 @@ export default class InfiniteGameState extends Phaser.State {
         if (Math.sqrt((brick.x - xpos) ** 2 + (brick.y - ypos) ** 2) < 100) {
           this.killBrick(brick);
         }
-      }
+      },
     );
   }
 
@@ -329,16 +331,16 @@ export default class InfiniteGameState extends Phaser.State {
     this.totalHealth -= healthLeft;
     brick.damage(healthLeft);
     brick.kill();
-    var explosion = this.explosionGroup.getFirstExists(false);
+    let explosion = this.explosionGroup.getFirstExists(false);
     if (!explosion) {
       explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
       explosion.anchor.setTo(0.5, 0.5);
     } else {
       explosion.reset(brick.x, brick.y);
     }
-    var anim = explosion.animations.add('explosion');
+    const anim = explosion.animations.add('explosion');
     anim.play('explosion', 20);
-    anim.onComplete.add(function () {
+    anim.onComplete.add(() => {
       explosion.kill();
     }, this);
     this.game.audio.boom.playIfNotMuted();
@@ -392,7 +394,7 @@ export default class InfiniteGameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet && this.bulletLeft >= 1) {
-      this.bulletLeft = this.bulletLeft - 1;
+      this.bulletLeft -= 1;
       this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
@@ -518,7 +520,7 @@ export default class InfiniteGameState extends Phaser.State {
     gameEndMenuText.scale.setTo(0.7, 0.7);
     dialog.addChild(gameEndMenuText);
 
-    const gameEndScoreText = this.game.add.text(0, -8, '得分: ' + this.score, style);
+    const gameEndScoreText = this.game.add.text(0, -8, `得分: ${this.score}`, style);
     gameEndScoreText.anchor.setTo(0.5, 0.5);
     gameEndScoreText.scale.setTo(0.6, 0.6);
     dialog.addChild(gameEndScoreText);
@@ -550,5 +552,4 @@ export default class InfiniteGameState extends Phaser.State {
       this.game.state.start('menu');
     }
   }
-
 }
