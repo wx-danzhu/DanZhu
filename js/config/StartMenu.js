@@ -137,14 +137,6 @@ const buttons = [
         state: 'danzhuGame',
         key: {
           index: 8,
-          map: generateMap(8),
-        },
-      },
-      {
-        name: 'Random',
-        state: 'danzhuGame',
-        key: {
-          index: 9,
           map: generateMap(9),
         },
       },
@@ -152,7 +144,7 @@ const buttons = [
         name: 'Random',
         state: 'danzhuGame',
         key: {
-          index: 10,
+          index: 9,
           map: generateMap(10),
         },
       },
@@ -161,13 +153,7 @@ const buttons = [
   {
     key: 'open',
     name: '排行',
-    state: 'openShowRankingList',
-    children: [
-      {
-        name: 'show ranking list',
-        state: 'openShowRankingList',
-      },
-    ],
+    state: 'rankinglist',
   },
   {
     key: 'title',

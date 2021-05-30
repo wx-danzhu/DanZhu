@@ -37,7 +37,6 @@ export default class MenuState extends Phaser.State {
     // ranklist
     const exampleRect = new ShortRect(this.game,
       this.game.width / 2 + 70, this.game.height - 180, Buttons[2]);
-
     exampleRect.addClick(this.clickRankRect, { state: this, properties: Buttons[2] });
     this.exampleGroup.add(exampleRect);
 

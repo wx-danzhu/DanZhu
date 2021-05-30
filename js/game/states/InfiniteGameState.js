@@ -418,7 +418,7 @@ export default class InfiniteGameState extends Phaser.State {
 
   hit(brick) {
     this.score += 1;
-    this.scoreText.text = `Score: ${this.score}`;
+    this.scoreText.text = `得分: ${this.score}`;
     brick.damage(1);
     // eslint-disable-next-line no-param-reassign
     brick.healthText.text = `${brick.health}`;
