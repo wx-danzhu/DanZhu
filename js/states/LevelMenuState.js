@@ -19,29 +19,31 @@ export default class LevelMenuState extends BackToMenuState {
   create() {
     super.create();
 
+    this.pageSize = 9;
+    this.maxPageSize = Math.ceil(this.list.length / this.pageSize);
+
     this.caseGroup = this.game.add.group();
     // 选择关卡
     const title = new Title(this.game,
       this.game.width / 2, 180, Buttons[4]);
-    this.caseGroup.add(title);
+    this.game.world.add(title);
     for (let i = 0; i < this.list.length; i += 1) {
+      const pageNumber = Math.floor(i / this.pageSize);
       const levelSqaure = new LevelSquare(
         this.game,
         this.game.width / 4 + (this.game.width / 4) * (i % 3),
-        300 + 100 * Math.floor(i / 3),
+        300 + (100 * Math.floor((i % this.pageSize) / 3)) + (pageNumber * 1000),
         { name: `${i + 1}` },
       );
       levelSqaure.addClick(this.clickRect,
         { state: this, properties: this.list[i], key: this.list[i].key });
       this.caseGroup.add(levelSqaure);
     }
-    this.pageSize = 9;
-    this.maxPageSize = Math.ceil(this.list.length / this.pageSize);
     this.curPage = 1;
     this.enablePageInput(this.curPage);
 
-    this.arrowUp = new Arrow(this.game, this.game.width / 2, 26, 'arrowUp');
-    this.arrowDown = new Arrow(this.game, this.game.width / 2, this.game.height - 26, 'arrowDown');
+    this.arrowUp = new Arrow(this.game, this.game.width / 2, 240, 'arrowUp');
+    this.arrowDown = new Arrow(this.game, this.game.width / 2, this.game.height - 108, 'arrowDown');
 
     this.arrowUp.addClick(this.clickArrow, { state: this, dir: 'up' });
     this.arrowDown.addClick(this.clickArrow, { state: this, dir: 'down' });
@@ -55,15 +57,15 @@ export default class LevelMenuState extends BackToMenuState {
         this.state.disablePageInput(this.state.curPage);
         this.state.curPage -= 1;
         this.state.enablePageInput(this.state.curPage);
-        this.state.changeArrow(this.curPage);
+        this.state.changeArrow(this.state.curPage);
       }
     } else if (this.state.curPage < this.state.maxPageSize) {
       this.state.disablePageInput(this.state.curPage);
       this.state.curPage += 1;
       this.state.enablePageInput(this.state.curPage);
-      this.state.changeArrow(this.curPage);
+      this.state.changeArrow(this.state.curPage);
     }
-    this.state.game.add.tween(this.state.caseGroup).to({ y: -(this.state.curPage - 1) * 544 }, 200, 'Linear', true);
+    this.state.game.add.tween(this.state.caseGroup).to({ y: -(this.state.curPage - 1) * 1000 }, 200, 'Linear', true);
   }
 
   clickRect() {

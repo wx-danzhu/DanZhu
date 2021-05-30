@@ -133,18 +133,82 @@ const buttons = [
         },
       },
       {
-        name: 'Random',
+        name: 'Random1',
         state: 'danzhuGame',
         key: {
           index: 8,
+          map: generateMap(1),
+        },
+      },
+      {
+        name: 'Random2',
+        state: 'danzhuGame',
+        key: {
+          index: 9,
+          map: generateMap(2),
+        },
+      },
+      {
+        name: 'Random3',
+        state: 'danzhuGame',
+        key: {
+          index: 10,
+          map: generateMap(3),
+        },
+      },
+      {
+        name: 'Random4',
+        state: 'danzhuGame',
+        key: {
+          index: 11,
+          map: generateMap(4),
+        },
+      },
+      {
+        name: 'Random5',
+        state: 'danzhuGame',
+        key: {
+          index: 12,
+          map: generateMap(5),
+        },
+      },
+      {
+        name: 'Random6',
+        state: 'danzhuGame',
+        key: {
+          index: 13,
+          map: generateMap(6),
+        },
+      },
+      {
+        name: 'Random7',
+        state: 'danzhuGame',
+        key: {
+          index: 14,
+          map: generateMap(7),
+        },
+      },
+      {
+        name: 'Random8',
+        state: 'danzhuGame',
+        key: {
+          index: 15,
+          map: generateMap(8),
+        },
+      },
+      {
+        name: 'Random9',
+        state: 'danzhuGame',
+        key: {
+          index: 16,
           map: generateMap(9),
         },
       },
       {
-        name: 'Random',
+        name: 'Random10',
         state: 'danzhuGame',
         key: {
-          index: 9,
+          index: 17,
           map: generateMap(10),
         },
       },
