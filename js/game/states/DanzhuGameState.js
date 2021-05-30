@@ -139,16 +139,6 @@ export default class GameState extends Phaser.State {
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
-
-    // set total health number
-    this.totalHealth = 0;
-    this.brickGroup.forEach(
-      (brick) => {
-        this.totalHealth += brick.health;
-      },
-    );
-    //  console.log("printing total health");
-    //  console.log(this.totalHealth);
   }
 
   update() {
@@ -283,7 +273,6 @@ export default class GameState extends Phaser.State {
 
   hit(brick) {
     brick.damage(1);
-    this.totalHealth -= 1;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
@@ -368,11 +357,12 @@ export default class GameState extends Phaser.State {
 
   checkGameStatus() {
     const bullet = this.bulletGroup.getFirstExists(true);
-    if (bullet && this.bulletLeft) {
+    if (bullet) {
       // if there are still bullets on the screen
       return;
     }
-    if (this.totalHealth <= 0) {
+    const brick = this.brickGroup.getFirstExists(true);
+    if (!brick) {
       this.goToNextGame();
     } else if (this.bulletLeft <= 0) {
       this.gameEnd();
