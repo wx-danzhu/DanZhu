@@ -265,6 +265,9 @@ export default class GameState extends Phaser.State {
       const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
       for (let i = 0; i < bulletsPerShot; i += 1) {
         this.game.time.events.add((Phaser.Timer.SECOND / 10) * i, () => {
+          if (this.bulletLeft <= 0) {
+            return;
+          }
           const newBullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
           newBullet.body.bounce.set(1);
           newBullet.outOfBoundsKill = true;
