@@ -1,3 +1,5 @@
+import generateMap from '../utils/MapGen2';
+
 const buttons = [
   {
     key: 'game',
@@ -128,6 +130,30 @@ const buttons = [
             [0, 9], [4, 9], [5, 9], [9, 9],
             [4, 10], [5, 10],
           ],
+        },
+      },
+      {
+        name: 'Random',
+        state: 'danzhuGame',
+        key: {
+          index: 8,
+          map: generateMap(8),
+        },
+      },
+      {
+        name: 'Random',
+        state: 'danzhuGame',
+        key: {
+          index: 9,
+          map: generateMap(9),
+        },
+      },
+      {
+        name: 'Random',
+        state: 'danzhuGame',
+        key: {
+          index: 10,
+          map: generateMap(10),
         },
       },
     ],
