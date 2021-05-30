@@ -12,6 +12,15 @@ const wallHeight = 50;
 const initialShotNumber = 20;
 const bulletsPerShot = 10;
 
+function calculateStarNumber(bulletNumber) {
+  if (bulletNumber / (initialShotNumber * bulletsPerShot) > 0.5) {
+    return 3;
+  } if (bulletNumber / (initialShotNumber * bulletsPerShot) > 0.25) {
+    return 2;
+  }
+  return 1;
+}
+
 export default class GameState extends Phaser.State {
   constructor(game) {
     super();
@@ -267,6 +276,13 @@ export default class GameState extends Phaser.State {
           newBullet.events.onKilled.add(this.checkGameStatus, this);
           this.bulletLeft -= 1;
           this.bulletText.text = `子弹: ${this.bulletLeft}`;
+          if (calculateStarNumber(this.bulletLeft) === 3) {
+            this.bulletText.setStyle({ fill: '#ffffff' }, true);
+          } else if (calculateStarNumber(this.bulletLeft) === 2) {
+            this.bulletText.setStyle({ fill: '#fff633' }, true);
+          } else {
+            this.bulletText.setStyle({ fill: '#ff3333' }, true);
+          }
         }, this);
       }
     }
@@ -406,12 +422,19 @@ export default class GameState extends Phaser.State {
     this.game.input.onDown.add(this.goToNextDown, this);
 
     let starSign;
-    if (this.bulletLeft / (initialShotNumber * bulletsPerShot) > 0.5) {
-      starSign = 'threeStars';
-    } else if (this.bulletLeft / (initialShotNumber * bulletsPerShot) > 0.25) {
-      starSign = 'twoStars';
-    } else {
-      starSign = 'oneStar';
+    switch (calculateStarNumber(this.bulletLeft)) {
+      case 3:
+        starSign = 'threeStars';
+        break;
+      case 2:
+        starSign = 'twoStars';
+        break;
+      case 1:
+        starSign = 'oneStar';
+        break;
+      default:
+        starSign = 'oneStar';
+        break;
     }
     const starImage = this.game.add.sprite(0, -38, starSign);
     starImage.anchor.setTo(0.5, 0.5);
