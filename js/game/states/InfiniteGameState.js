@@ -3,24 +3,14 @@
 import Phaser from '../../libs/phaser-wx';
 import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
-import Buttons from '../../config/StartMenu';
+import generateMap from '../../utils/MapGenerator';
 
 const wallWidth = 10;
 const wallHeight = 50;
 
-const initialShotNumber = 20;
 const bulletsPerShot = 10;
 
-function calculateStarNumber(bulletNumber) {
-  if (bulletNumber / (initialShotNumber * bulletsPerShot) > 0.5) {
-    return 3;
-  } if (bulletNumber / (initialShotNumber * bulletsPerShot) > 0.25) {
-    return 2;
-  }
-  return 1;
-}
-
-export default class GameState extends Phaser.State {
+export default class InfiniteGameState extends Phaser.State {
   constructor(game) {
     super();
     this.game = game;
@@ -59,8 +49,9 @@ export default class GameState extends Phaser.State {
   init(parameters) {
     if (parameters) {
       this.map = parameters.map;
-      this.levelKey = parameters;
-      this.levelIndex = parameters.index;
+      this.level = parameters.level;
+      this.score = parameters.score;
+      this.bullet = parameters.bullet;
     }
   }
 
@@ -78,26 +69,18 @@ export default class GameState extends Phaser.State {
 
     // world walls
     this.wallGroup = this.game.add.group();
-    // this.wallGroup.enableBody = true;
-    // this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
-    // this.wallTop = this.wallGroup.create(-80, -10, 'wall');
-    // this.wallTop.scale.setTo(10, 1);
     this.wallTop = new Wall(this.game, this.game.width / 2, 0, '#5DECBF');
     this.wallTop.height = wallHeight + wallHeight;
     this.wallTop.width = this.game.width + 10;
     this.game.physics.arcade.enable(this.wallTop);
     this.wallTop.body.immovable = true;
     this.wallGroup.add(this.wallTop);
-    // this.wallLeft = this.wallGroup.create(-55, -10, 'wall');
-    // this.wallLeft.scale.setTo(1, 15);
     this.wallLeft = new Wall(this.game, 0, this.game.height / 2, '#5DECBF');
     this.wallLeft.height = this.game.height + 10;
     this.wallLeft.width = wallWidth + wallWidth;
     this.game.physics.arcade.enable(this.wallLeft);
     this.wallLeft.body.immovable = true;
     this.wallGroup.add(this.wallLeft);
-    // this.wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
-    // this.wallRight.scale.setTo(1, 15);
     this.wallRight = new Wall(this.game, this.game.width, this.game.height / 2, '#5DECBF');
     this.wallRight.height = this.game.height + 10;
     this.wallRight.width = wallWidth + wallWidth;
@@ -109,6 +92,11 @@ export default class GameState extends Phaser.State {
     this.brickGroup = this.game.add.group();
     this.brickGroup.enableBody = true;
     this.brickGroup.physicsBodyType = Phaser.Physics.ARCADE;
+
+    // bombs
+    this.bombGroup = this.game.add.group();
+    this.bombGroup.enableBody = true;
+    this.bombGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
     // bullet
     this.bulletGroup = this.game.add.group();
@@ -127,13 +115,19 @@ export default class GameState extends Phaser.State {
     // aiming lines
     this.aimingLineGroup = this.game.add.group();
 
+    // score
+    const style = { font: '24px', fill: '#ffffff' };
+    this.scoreText = this.game.add.text(40, 15, `得分: ${this.score}`, style);
+
+    // bullet left
+    this.bulletLeft = this.bullet;
+    this.bulletText = this.game.add.text(160, 15, `子弹: ${this.bulletLeft}`, style);
+
     // generate bricks
     this.generateBricks(this.map);
 
-    // bullet left
-    const style = { font: '24px', fill: '#ffffff' };
-    this.bulletLeft = initialShotNumber * bulletsPerShot;
-    this.bulletText = this.game.add.text(50, 15, `子弹: ${this.bulletLeft}`, style);
+    // generate bombs
+    this.generateBombs();
 
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
@@ -147,6 +141,8 @@ export default class GameState extends Phaser.State {
     }
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
+    // detect collision between bullets and bombs
+    this.game.physics.arcade.collide(this.bombGroup, this.bulletGroup, this.hitBomb, null, this);
     // detect collision between bullets and walls
     this.game.physics.arcade.collide(this.wallGroup, this.bulletGroup);
     // aiming and no bullet is shown
@@ -229,6 +225,139 @@ export default class GameState extends Phaser.State {
     });
   }
 
+  generateBombs() {
+    if (Math.random() > 0.3) {
+      return;
+    }
+    const startPosX = this.wallLeft.right;
+    const startPosY = this.wallTop.bottom;
+    const endPosX = this.wallRight.left;
+    const bombLen = (endPosX - startPosX) / 10;
+
+    const locations = [];
+    let coord;
+    do {
+      const randX = Math.floor(Math.random() * 10);
+      const randY = Math.floor(Math.random() * 12);
+      coord = [randX, randY];
+    } while (this.isOccupied(coord));
+    locations.push(coord);
+
+    locations.forEach((location) => {
+      if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
+        return;
+      }
+      const bomb = this.bombGroup.create(startPosX + location[0] * bombLen, startPosY + location[1] * bombLen, 'bomb');
+      bomb.body.immovable = true;
+      bomb.health = 1;
+      bomb.anchor.setTo(0, 0);
+      bomb.height = bombLen;
+      bomb.width = bombLen;
+    });
+  }
+
+  isOccupied(location) {
+    let occupied = false;
+    this.map.forEach(
+      (brick) => {
+        if (location[0] === brick[0] && location[1] === brick[1]) {
+          occupied = true;
+        }
+      },
+    );
+    return occupied;
+  }
+
+  hitBomb(bomb) {
+    const xpos = bomb.x;
+    const ypos = bomb.y;
+    bomb.damage(1);
+    if (bomb.health <= 0) {
+      bomb.kill();
+    }
+    let explosion = this.explosionGroup.getFirstExists(false);
+    if (!explosion) {
+      explosion = this.explosionGroup.create(bomb.x, bomb.y, 'explosion');
+      explosion.anchor.setTo(0.5, 0.5);
+    } else {
+      explosion.reset(bomb.x, bomb.y);
+    }
+    const anim = explosion.animations.add('explosion');
+    anim.play('explosion', 20);
+    anim.onComplete.add(() => {
+      explosion.kill();
+    }, this);
+    this.game.audio.boom.playIfNotMuted();
+    this.brickGroup.forEach(
+      (brick) => {
+        // console.log(Math.sqrt(Math.pow(brick.x - xpos, 2) + Math.pow(brick.y - ypos, 2)));
+        if (Math.sqrt((brick.x - xpos) ** 2 + (brick.y - ypos) ** 2) < 100) {
+          this.killBrick(brick);
+        }
+      },
+    );
+  }
+
+  killBrick(brick) {
+    const healthLeft = brick.health;
+    this.score += healthLeft;
+    this.scoreText.text = `得分: ${this.score}`;
+    brick.damage(healthLeft);
+    brick.kill();
+    let explosion = this.explosionGroup.getFirstExists(false);
+    if (!explosion) {
+      explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
+      explosion.anchor.setTo(0.5, 0.5);
+    } else {
+      explosion.reset(brick.x, brick.y);
+    }
+    const anim = explosion.animations.add('explosion');
+    anim.play('explosion', 20);
+    anim.onComplete.add(() => {
+      explosion.kill();
+    }, this);
+    this.game.audio.boom.playIfNotMuted();
+  }
+
+  updateScore() {
+    const openDataContext = wx.getOpenDataContext();
+    openDataContext.postMessage({
+      action: 'UPDATE_SCORE',
+      currScore: this.score,
+    });
+  }
+
+  checkGameStatus() {
+    const bullet = this.bulletGroup.getFirstExists(true);
+    if (bullet) {
+      // if there are still bullets on the screen
+      return;
+    }
+    const brick = this.brickGroup.getFirstExists(true);
+    if (!brick) {
+      this.updateScore();
+      this.goToNextGame();
+    } else if (this.bulletLeft <= 0) {
+      this.updateScore();
+      this.gameEnd();
+    }
+  }
+
+  goToNextGame() {
+    this.game.audio.pass.playIfNotMuted();
+    setTimeout(() => {
+      // show some animation here
+      this.destroyAudios();
+      this.state.game.state.start('infiniteGameAnimation', true, false,
+        {
+          map: generateMap(this.level + 1),
+          level: this.level + 1,
+          score: this.score,
+          bullet: this.bulletLeft + 8 * bulletsPerShot, // refill 8 shots of bullets
+        });
+    }, 4000);
+  }
+
   dragStart(event) {
     if (this.canDrag && event.y > this.wallTop.bottom) {
       this.dragging = true;
@@ -265,12 +394,10 @@ export default class GameState extends Phaser.State {
           newBullet.events.onKilled.add(this.checkGameStatus, this);
           this.bulletLeft -= 1;
           this.bulletText.text = `子弹: ${this.bulletLeft}`;
-          if (calculateStarNumber(this.bulletLeft) === 3) {
-            this.bulletText.setStyle({ fill: '#ffffff' }, true);
-          } else if (calculateStarNumber(this.bulletLeft) === 2) {
-            this.bulletText.setStyle({ fill: '#fff633' }, true);
+          if (this.bulletLeft <= 3 * bulletsPerShot) {
+            this.bulletText.setStyle({ font: '24px', fill: '#ff3333' }, true);
           } else {
-            this.bulletText.setStyle({ fill: '#ff3333' }, true);
+            this.bulletText.setStyle({ font: '24px', fill: '#ffffff' }, true);
           }
         }, this);
       }
@@ -278,6 +405,8 @@ export default class GameState extends Phaser.State {
   }
 
   hit(brick) {
+    this.score += 1;
+    this.scoreText.text = `Score: ${this.score}`;
     brick.damage(1);
     if (brick.health <= 0) {
       brick.kill();
@@ -297,7 +426,7 @@ export default class GameState extends Phaser.State {
     }
   }
 
-  // show pause menu, currently not working
+  // show pause menu
   showPause() {
     this.canDrag = false;
     this.game.paused = true;
@@ -361,101 +490,6 @@ export default class GameState extends Phaser.State {
     }
   }
 
-  checkGameStatus() {
-    const bullet = this.bulletGroup.getFirstExists(true);
-    if (bullet) {
-      // if there are still bullets on the screen
-      return;
-    }
-    const brick = this.brickGroup.getFirstExists(true);
-    if (!brick) {
-      this.goToNextGame();
-    } else if (this.bulletLeft <= 0) {
-      this.gameEnd();
-    }
-  }
-
-  // show goToNextGame menu
-  goToNextGame() {
-    this.game.audio.pass.playIfNotMuted();
-    this.canDrag = false;
-    this.game.paused = true;
-    const dialog = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'common', 'dialog');
-    this.dialog = dialog;
-    dialog.anchor.setTo(0.5, 0.5);
-    dialog.scale.setTo(2.5, 2.5);
-
-    // 下一关
-    this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
-    this.nextLevelButton.anchor.setTo(0.5, 0.5);
-    this.nextLevelButton.scale.setTo(1.2, 0.7);
-    dialog.addChild(this.nextLevelButton);
-
-    const style = { font: '16px', fill: '#ffffff' };
-    const nextLevelText = this.game.add.text(0, 2, '下一关', style);
-    nextLevelText.anchor.setTo(0.5, 0.5);
-    nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-    this.nextLevelButton.addChild(nextLevelText);
-
-    // 返回
-    this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
-    this.backButton.anchor.setTo(0.5, 0.5);
-    this.backButton.scale.setTo(1.2, 0.7);
-    dialog.addChild(this.backButton);
-
-    const backText = this.game.add.text(0, 2, '返回', style);
-    backText.anchor.setTo(0.5, 0.5);
-    backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-    this.backButton.addChild(backText);
-
-    this.game.input.onDown.add(this.goToNextDown, this);
-
-    let starSign;
-    switch (calculateStarNumber(this.bulletLeft)) {
-      case 3:
-        starSign = 'threeStars';
-        break;
-      case 2:
-        starSign = 'twoStars';
-        break;
-      case 1:
-        starSign = 'oneStar';
-        break;
-      default:
-        starSign = 'oneStar';
-        break;
-    }
-    const starImage = this.game.add.sprite(0, -38, starSign);
-    starImage.anchor.setTo(0.5, 0.5);
-    starImage.scale.setTo(0.2, 0.2);
-    dialog.addChild(starImage);
-  }
-
-  goToNextDown(event) {
-    if (!this.game.paused) {
-      return;
-    }
-    const goToNextBonuds = this.nextLevelButton.getBounds();
-    const backBonuds = this.backButton.getBounds();
-    if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
-      // back button pressed
-      this.game.paused = false;
-      this.game.input.onDown.remove(this.gameEndMenuDown, this);
-      this.destroyAudios();
-      this.game.state.start('menu');
-    } else if (Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
-      // go to next level
-      this.game.paused = false;
-      this.game.input.onDown.remove(this.goToNextDown, this);
-      const list = Buttons[1].children;
-      this.destroyAudios();
-      this.state.game.state.start(
-        'danzhuGame',
-        true, false, list[this.levelIndex].key,
-      );
-    }
-  }
-
   // show gameEnd menu
   gameEnd() {
     this.canDrag = false;
@@ -471,27 +505,21 @@ export default class GameState extends Phaser.State {
     gameEndMenuText.scale.setTo(0.7, 0.7);
     dialog.addChild(gameEndMenuText);
 
-    // 重玩本关
-    this.restartButton = this.game.add.sprite(0, 0, 'common', 'button');
-    this.restartButton.anchor.setTo(0.5, 0.5);
-    this.restartButton.scale.setTo(1.2, 0.7);
-    dialog.addChild(this.restartButton);
-
-    const restartText = this.game.add.text(0, 2, '重玩', style);
-    restartText.anchor.setTo(0.5, 0.5);
-    restartText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-    this.restartButton.addChild(restartText);
+    const gameEndScoreText = this.game.add.text(0, -8, `得分: ${this.score}`, style);
+    gameEndScoreText.anchor.setTo(0.5, 0.5);
+    gameEndScoreText.scale.setTo(0.6, 0.6);
+    dialog.addChild(gameEndScoreText);
 
     // 返回
-    this.backToMenuButton = this.game.add.sprite(0, 16, 'common', 'button');
-    this.backToMenuButton.anchor.setTo(0.5, 0.5);
-    this.backToMenuButton.scale.setTo(1.2, 0.7);
-    dialog.addChild(this.backToMenuButton);
+    this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
+    this.backButton.anchor.setTo(0.5, 0.5);
+    this.backButton.scale.setTo(1.2, 0.7);
+    dialog.addChild(this.backButton);
 
-    const backToMenuText = this.game.add.text(0, 2, '返回', style);
-    backToMenuText.anchor.setTo(0.5, 0.5);
-    backToMenuText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-    this.backToMenuButton.addChild(backToMenuText);
+    const backText = this.game.add.text(0, 2, '返回', style);
+    backText.anchor.setTo(0.5, 0.5);
+    backText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+    this.backButton.addChild(backText);
 
     this.game.input.onDown.add(this.gameEndMenuDown, this);
   }
@@ -500,20 +528,13 @@ export default class GameState extends Phaser.State {
     if (!this.game.paused) {
       return;
     }
-    const restartBonuds = this.restartButton.getBounds();
-    const backBonuds = this.backToMenuButton.getBounds();
+    const backBonuds = this.backButton.getBounds();
     if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
       // back button pressed
       this.game.paused = false;
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
-    } else if (Phaser.Rectangle.contains(restartBonuds, event.x, event.y)) {
-      // restart this level
-      this.game.paused = false;
-      this.game.input.onDown.remove(this.gameEndMenuDown, this);
-      this.destroyAudios();
-      this.state.game.state.start('danzhuGame', true, false, this.levelKey);
     }
   }
 }
