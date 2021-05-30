@@ -12,7 +12,7 @@ const SCORE_SIZE = 20;
 
 function drawRankItem(ctx, index, rank, data, pageLen) {
   const { avatarUrl } = data;
-  const nick = data.nickname.length <= 10 ? data.nickname : `${data.nickname.substr(0, 10)}...`;
+  const nick = data.nickname.length <= 7 ? data.nickname : `${data.nickname.substr(0, 7)}...`;
   const kvData = data.KVDataList.find((kd) => kd.key === 'score');
   const grade = kvData ? kvData.value : 0;
   const itemGapY = ITEM_HEIGHT * index;
@@ -46,7 +46,7 @@ function drawRankItem(ctx, index, rank, data, pageLen) {
   ctx.textAlign = 'left';
   ctx.baseLine = 'middle';
   ctx.font = `${SCORE_SIZE}px cursive`;
-  ctx.fillText(`${grade}分`, 280, ITEM_HEIGHT - ((ITEM_HEIGHT - SCORE_SIZE) / 2) + itemGapY);
+  ctx.fillText(`${grade}分`, 260, ITEM_HEIGHT - ((ITEM_HEIGHT - SCORE_SIZE) / 2) + itemGapY);
 }
 
 function showPageRanks(ctx, pageNumber, gameData) {
