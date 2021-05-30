@@ -258,7 +258,7 @@ export default class InfiniteGameState extends Phaser.State {
       let num = Math.floor(Math.random() * 111);
       locations = [[Math.floor(num / 10), num % 10]];
       let coord = [startPosX + locations[0][0] * bombLen, startPosY
-       + locations[0][1] * bombLen];
+        + locations[0][1] * bombLen];
       while (this.isOccupied(coord)) {
         num = Math.floor(Math.random() * 111);
         locations = [[Math.floor(num / 10), num % 10]];
@@ -286,9 +286,6 @@ export default class InfiniteGameState extends Phaser.State {
           occupied = false;
         }
         return;
-        // console.log(location[0]);
-        // console.log(brick.x);
-        // console.log(location[0] === brick.x);
       }
     );
     return occupied;
@@ -345,27 +342,22 @@ export default class InfiniteGameState extends Phaser.State {
       explosion.kill();
     }, this);
     this.game.audio.boom.playIfNotMuted();
-    const score = this.score + '';
-    wx.setUserCloudStorage({
-      KVDataList: [{
-        key: "score",
-        value: score,
-      }],
-      success() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} success`);
-      },
-      fail() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} fail`);
-      },
+  }
+
+  listener() {
+    const openDataContext = wx.getOpenDataContext();
+    openDataContext.postMessage({
+      action: 'UPDATE_SCORE',
+      currScore: this.score,
     });
   }
 
   checkGameStatus() {
     if (this.totalHealth <= 0) {
+      this.listener();
       this.goToNextGame();
     } else if (this.bulletLeft <= 0) {
+      this.listener();
       this.gameEnd();
     }
   }
@@ -445,21 +437,6 @@ export default class InfiniteGameState extends Phaser.State {
       }, this);
       this.game.audio.boom.playIfNotMuted();
     }
-    const score = `${this.score}`;
-    wx.setUserCloudStorage({
-      KVDataList: [{
-        key: 'score',
-        value: score,
-      }],
-      success() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} success`);
-      },
-      fail() {
-        // eslint-disable-next-line no-console
-        console.log(`save score ${score} fail`);
-      },
-    });
   }
 
   // show pause menu
