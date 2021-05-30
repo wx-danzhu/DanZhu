@@ -71,6 +71,34 @@ wx.onMessage((data) => {
     wx.getFriendCloudStorage({
       keyList: ['score'],
     });
+  } else if (data.action === 'UPDATE_SCORE') {
+    let maxScore = 0;
+    wx.getUserCloudStorage({
+      keyList: ['score'],
+      success(obj) {
+        if (data.currScore) {
+          maxScore = data.currScore;
+          if (obj.KVDataList) {
+            maxScore = Math.max(maxScore,
+              parseInt(obj.KVDataList[0].value, 10));
+          }
+          wx.setUserCloudStorage({
+            KVDataList: [{
+              key: 'score',
+              value: `${maxScore}`,
+            }],
+            success() {
+              // eslint-disable-next-line no-console
+              console.log(`save score ${maxScore} success`);
+            },
+            fail() {
+              // eslint-disable-next-line no-console
+              console.log(`save score ${maxScore} fail`);
+            },
+          });
+        }
+      },
+    });
     /**
      * 排行榜渲染方案来自网友aleafworld，详细请看他的帖子：http://club.phaser-china.com/topic/5af6bf52484a53dd723f42e1
      */
