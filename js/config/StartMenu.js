@@ -1,7 +1,7 @@
 const buttons = [
   {
     key: 'game',
-    name: '快速游戏',
+    name: '无尽模式',
     state: 'infiniteGame',
   },
   {
