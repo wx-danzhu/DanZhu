@@ -1,10 +1,3 @@
-const leftX = 10;
-const rightX = 365;
-const topY = 50;
-const cannonX = 187.5;
-const cannonY = 617;
-const brickLen = (rightX - leftX) / 10;
-
 function getRandomBrickPosHealth() {
   return [
     Math.floor(Math.random() * 10),
@@ -87,13 +80,15 @@ function generateNew(map) {
   });
   const rnd = Math.floor(Math.random() * totalPossibility);
   let accProb = 0;
+  let res;
   possibilities.forEach((x) => {
     accProb += x[2];
     if (accProb > rnd) {
-      return x;
+      res = x;
     }
+    res = getRandomBrickPosHealth();
   });
-  return getRandomBrickPosHealth();
+  return res;
 }
 
 function calculateTotalHealth(map) {
