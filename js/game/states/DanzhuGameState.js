@@ -142,7 +142,9 @@ export default class GameState extends Phaser.State {
 
   update() {
     // play bgm here so that it starts after brought back from background
-    this.game.audio.bgm.playIfNotMuted();
+    if (!this.game.paused) {
+      this.game.audio.bgm.playIfNotMuted();
+    }
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
     // detect collision between bullets and walls
@@ -450,8 +452,8 @@ export default class GameState extends Phaser.State {
       // go to next level
       this.game.paused = false;
       this.game.input.onDown.remove(this.goToNextDown, this);
-      this.destroyAudios();
       const list = Buttons[1].children;
+      this.destroyAudios();
       this.state.game.state.start(
         'danzhuGame',
         true, false, list[this.levelIndex].key,

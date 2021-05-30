@@ -137,7 +137,9 @@ export default class InfiniteGameState extends Phaser.State {
 
   update() {
     // play bgm here so that it starts after brought back from background
-    this.game.audio.bgm.playIfNotMuted();
+    if (!this.game.paused) {
+      this.game.audio.bgm.playIfNotMuted();
+    }
     // detect collision between bullets and bricks
     this.game.physics.arcade.collide(this.brickGroup, this.bulletGroup, this.hit, null, this);
     // detect collision between bullets and bombs
@@ -242,7 +244,7 @@ export default class InfiniteGameState extends Phaser.State {
     let coord;
     do {
       const randX = Math.floor(Math.random() * 10);
-      const randY = Math.floor(Math.random() * 10);
+      const randY = Math.floor(Math.random() * 12);
       coord = [randX, randY];
     } while (this.isOccupied(coord));
     locations.push(coord);
@@ -351,6 +353,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.game.audio.pass.playIfNotMuted();
     setTimeout(() => {
       // show some animation here
+      this.destroyAudios();
       this.state.game.state.start('infiniteGameAnimation', true, false,
         {
           map: generateMap(this.level + 1),
