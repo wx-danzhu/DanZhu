@@ -38,8 +38,8 @@ export default class GameState extends Phaser.State {
   }
 
   preload() {
-    this.game.load.image('cannon', 'assets/plane/images/hero.png');
-    this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
+    this.game.load.image('cannon', 'assets/plane/images/DarkCannon.png');
+    this.game.load.image('brick', 'assets/plane/images/SquareFort.png');
     this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
@@ -48,6 +48,7 @@ export default class GameState extends Phaser.State {
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
     this.createAudio('boom', 'assets/plane/audio/boom.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
+
   }
 
   init(parameters) {
@@ -63,7 +64,8 @@ export default class GameState extends Phaser.State {
     // start physics engine
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.game.stage.backgroundColor = '#042960';
+    this.game.stage.backgroundColor = '#55687D';
+
 
     this.game.input.onDown.add(this.dragStart, this);
     this.game.input.onUp.add(this.dragStop, this);
@@ -74,7 +76,7 @@ export default class GameState extends Phaser.State {
     // this.wallGroup.physicsBodyType = Phaser.Physics.ARCADE;
     // this.wallTop = this.wallGroup.create(-80, -10, 'wall');
     // this.wallTop.scale.setTo(10, 1);
-    this.wallTop = new Wall(this.game, this.game.width / 2, 0, '#5DECBF');
+    this.wallTop = new Wall(this.game, this.game.width / 2, 0, '#BBB2DC');
     this.wallTop.height = wallHeight + wallHeight;
     this.wallTop.width = this.game.width + 10;
     this.game.physics.arcade.enable(this.wallTop);
@@ -82,7 +84,7 @@ export default class GameState extends Phaser.State {
     this.wallGroup.add(this.wallTop);
     // this.wallLeft = this.wallGroup.create(-55, -10, 'wall');
     // this.wallLeft.scale.setTo(1, 15);
-    this.wallLeft = new Wall(this.game, 0, this.game.height / 2, '#5DECBF');
+    this.wallLeft = new Wall(this.game, 0, this.game.height / 2, '#F8FF00');
     this.wallLeft.height = this.game.height + 10;
     this.wallLeft.width = wallWidth + wallWidth;
     this.game.physics.arcade.enable(this.wallLeft);
@@ -90,7 +92,7 @@ export default class GameState extends Phaser.State {
     this.wallGroup.add(this.wallLeft);
     // this.wallRight = this.wallGroup.create(this.game.width - 9, -10, 'wall');
     // this.wallRight.scale.setTo(1, 15);
-    this.wallRight = new Wall(this.game, this.game.width, this.game.height / 2, '#5DECBF');
+    this.wallRight = new Wall(this.game, this.game.width, this.game.height / 2, '#F8FF00');
     this.wallRight.height = this.game.height + 10;
     this.wallRight.width = wallWidth + wallWidth;
     this.game.physics.arcade.enable(this.wallRight);
@@ -114,7 +116,7 @@ export default class GameState extends Phaser.State {
     // cannon
     this.cannon = this.game.add.sprite(this.game.width / 2, this.game.height - 50, 'cannon');
     this.cannon.anchor.setTo(0.5, 0.5);
-    this.cannon.scale.setTo(0.5, 0.5);
+    this.cannon.scale.setTo(0.1, 0.1);
 
     // aiming lines
     this.aimingLineGroup = this.game.add.group();
