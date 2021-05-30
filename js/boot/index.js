@@ -5,6 +5,7 @@ import AnimationState from '../states/AnimationState';
 import MenuState from '../states/MenuState';
 import LevelMenuState from '../states/LevelMenuState';
 import LicenseState from '../states/LicenseState';
+import HelpState from '../states/HelpState';
 
 export default class DanzhuGame {
   constructor(game) {
@@ -15,5 +16,6 @@ export default class DanzhuGame {
     game.state.add('menu', new MenuState(game));
     game.state.add('levelmenu', new LevelMenuState(game));
     game.state.add('licensepage', new LicenseState(game));
+    game.state.add('tutorial', new HelpState(game));
   }
 }

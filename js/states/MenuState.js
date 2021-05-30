@@ -6,6 +6,7 @@ import Title from '../objects/Title';
 import About from '../objects/About';
 import MuteButton from '../objects/MuteButton';
 import generateMap from '../utils/MapGenerator';
+import Help from '../objects/Help';
 
 export default class MenuState extends Phaser.State {
   constructor(game) {
@@ -46,6 +47,14 @@ export default class MenuState extends Phaser.State {
       650 + Math.floor((0 % 10) / 2) * 126, Buttons[5]);
     this.exampleGroup.add(about);
     about.addClick(this.clickRankRect, { state: this, properties: Buttons[5] });
+
+    //help menue
+    const help = new Help(this.game,
+      165 + Math.floor(2 / 10) * 252,
+      610 + Math.floor((0 % 10) / 2) * 126, Buttons[6]);
+    this.exampleGroup.add(help);
+    help.addClick(this.clickRankRect, { state: this, properties: Buttons[6] });
+    
 
     this.muteButton = new MuteButton(
       this.game,

@@ -150,6 +150,11 @@ const buttons = [
     name: 'About Danzhu 2021',
     state: 'licensepage',
   },
+  {
+    key: 'help',
+    name: '游戏说明',
+    state: 'tutorial'
+  }
 ];
 
 export default buttons;
