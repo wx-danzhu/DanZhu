@@ -121,7 +121,7 @@ export default class InfiniteGameState extends Phaser.State {
 
     // bullet left
     this.bulletLeft = this.bullet;
-    this.bulletText = this.game.add.text(150, 15, `子弹: ${this.bulletLeft}`, style);
+    this.bulletText = this.game.add.text(160, 15, `子弹: ${this.bulletLeft}`, style);
 
     // generate bricks
     this.generateBricks(this.map);
