@@ -1,7 +1,6 @@
 /* global wx:readonly */
 
 import Phaser from '../../libs/phaser-wx';
-import Common from '../atlas/common';
 import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
 import generateMap from '../../utils/MapGenerator';
