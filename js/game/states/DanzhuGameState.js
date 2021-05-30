@@ -9,6 +9,8 @@ import Buttons from '../../config/StartMenu';
 const wallWidth = 10;
 const wallHeight = 50;
 
+const initialBulletNumber = 20;
+
 export default class GameState extends Phaser.State {
   constructor(game) {
     super();
@@ -43,7 +45,7 @@ export default class GameState extends Phaser.State {
     this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
     this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
-    this.game.load.image('oneStar', 'assets/plane/images/oneStar.jpg');
+    this.game.load.image('oneStar', 'assets/plane/images/oneStar.png');
     this.game.load.image('twoStars', 'assets/plane/images/twoStars.png');
     this.game.load.image('threeStars', 'assets/plane/images/threeStars.png');
 
@@ -131,7 +133,7 @@ export default class GameState extends Phaser.State {
 
     // bullet left
     const style = { font: '24px', fill: '#ffffff' };
-    this.bulletLeft = 5;
+    this.bulletLeft = initialBulletNumber;
     this.bulletText = this.game.add.text(50, 15, `Bullet: ${this.bulletLeft}`, style);
 
     // pause
@@ -273,9 +275,7 @@ export default class GameState extends Phaser.State {
           newBullet.scale.setTo(0.3, 0.3);
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
-          if (i === 9) {
-            newBullet.events.onKilled.add(this.checkGameStatus, this);
-          }
+          newBullet.events.onKilled.add(this.checkGameStatus, this);
         }, this);
       }
     }
@@ -300,7 +300,6 @@ export default class GameState extends Phaser.State {
       }, this);
       this.game.audio.boom.playIfNotMuted();
     }
-    // this.checkGameStatus();
   }
 
   // show pause menu, currently not working
@@ -368,6 +367,11 @@ export default class GameState extends Phaser.State {
   }
 
   checkGameStatus() {
+    const bullet = this.bulletGroup.getFirstExists(true);
+    if (bullet && this.bulletLeft) {
+      // if there are still bullets on the screen
+      return;
+    }
     if (this.totalHealth <= 0) {
       this.goToNextGame();
     } else if (this.bulletLeft <= 0) {
@@ -384,19 +388,6 @@ export default class GameState extends Phaser.State {
     this.dialog = dialog;
     dialog.anchor.setTo(0.5, 0.5);
     dialog.scale.setTo(2.5, 2.5);
-
-    let starSign;
-    if (this.bulletLeft === 0) {
-      starSign = 'oneStar';
-    } else if (this.bulletLeft === 1) {
-      starSign = 'twoStars';
-    } else {
-      starSign = 'threeStars';
-    }
-    const starImage = this.game.add.sprite(2, -35, starSign, starSign);
-    starImage.anchor.setTo(0.5, 0.5);
-    starImage.scale.setTo(0.05, 0.05);
-    dialog.addChild(starImage);
 
     // 下一关
     this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
@@ -422,6 +413,19 @@ export default class GameState extends Phaser.State {
     this.backButton.addChild(backText);
 
     this.game.input.onDown.add(this.goToNextDown, this);
+
+    let starSign;
+    if (this.bulletLeft / initialBulletNumber > 0.5) {
+      starSign = 'threeStars';
+    } else if (this.bulletLeft / initialBulletNumber > 0.25) {
+      starSign = 'twoStars';
+    } else {
+      starSign = 'oneStar';
+    }
+    const starImage = this.game.add.sprite(0, -38, starSign);
+    starImage.anchor.setTo(0.5, 0.5);
+    starImage.scale.setTo(0.2, 0.2);
+    dialog.addChild(starImage);
   }
 
   goToNextDown(event) {
