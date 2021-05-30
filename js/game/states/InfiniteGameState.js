@@ -212,12 +212,7 @@ export default class InfiniteGameState extends Phaser.State {
     const startPosY = this.wallTop.bottom;
     const endPosX = this.wallRight.left;
     const brickLen = (endPosX - startPosX) / 10;
-    const locations = map || [
-      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-      [0, 1],
-      [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
-      [0, 10],
-    ];
+    const locations = map;
     locations.forEach((location) => {
       if (location[0] < 0 || location[0] > 9 || location[1] < 0 || location[1] > 11) {
         return;
@@ -264,9 +259,9 @@ export default class InfiniteGameState extends Phaser.State {
 
   isOccupied(location) {
     let occupied = false;
-    this.brickGroup.forEach(
+    this.map.forEach(
       (brick) => {
-        if (location[0] === brick.x && location[1] === brick.y) {
+        if (location[0] === brick[0] && location[1] === brick[1]) {
           occupied = true;
         }
       },
