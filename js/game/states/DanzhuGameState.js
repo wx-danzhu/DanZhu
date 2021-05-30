@@ -1,7 +1,6 @@
 /* global wx:readonly */
 
 import Phaser from '../../libs/phaser-wx';
-import Common from '../atlas/common';
 import Pause from '../objects/Pause';
 import Wall from '../objects/wall';
 import Buttons from '../../config/StartMenu';
@@ -51,16 +50,6 @@ export default class GameState extends Phaser.State {
   }
 
   preload() {
-    this.game.load.image('cannon', 'assets/plane/images/hero.png');
-    this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
-    this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
-    this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
-    this.game.load.image('oneStar', 'assets/plane/images/oneStar.png');
-    this.game.load.image('twoStars', 'assets/plane/images/twoStars.png');
-    this.game.load.image('threeStars', 'assets/plane/images/threeStars.png');
-
-    this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
-
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
     this.createAudio('boom', 'assets/plane/audio/boom.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');

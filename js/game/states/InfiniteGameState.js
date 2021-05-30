@@ -9,6 +9,8 @@ import generateMap from '../../utils/MapGenerator';
 const wallWidth = 10;
 const wallHeight = 50;
 
+const bulletsPerShot = 10;
+
 export default class InfiniteGameState extends Phaser.State {
   constructor(game) {
     super();
@@ -39,14 +41,6 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   preload() {
-    this.game.load.image('cannon', 'assets/plane/images/hero.png');
-    this.game.load.image('brick', 'assets/rolling_ball/block_small.png');
-    this.game.load.image('bomb', 'assets/rolling_ball/block_locked_small.png');
-    this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
-    this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
-
-    this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
-
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
     this.createAudio('boom', 'assets/plane/audio/boom.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
@@ -124,11 +118,11 @@ export default class InfiniteGameState extends Phaser.State {
 
     // score
     const style = { font: '24px', fill: '#ffffff' };
-    this.scoreText = this.game.add.text(40, 15, `Score: ${this.score}`, style);
+    this.scoreText = this.game.add.text(40, 15, `得分: ${this.score}`, style);
 
     // bullet left
     this.bulletLeft = this.bullet;
-    this.bulletText = this.game.add.text(150, 15, `Bullet: ${this.bulletLeft}`, style);
+    this.bulletText = this.game.add.text(150, 15, `子弹: ${this.bulletLeft}`, style);
 
     // generate bricks
     this.generateBricks(this.map);
@@ -139,21 +133,6 @@ export default class InfiniteGameState extends Phaser.State {
     // pause
     this.pause = new Pause(this.game, 26, 26, 'arrowBack');
     this.pause.addClick(this.showPause, this);
-
-    // set total health number
-    this.totalHealth = 0;
-    this.brickGroup.forEach(
-      (brick) => {
-        this.totalHealth += brick.health;
-      },
-    );
-    this.bombGroup.forEach(
-      (bomb) => {
-        this.totalHealth += bomb.health;
-      },
-    );
-    // console.log("printing total health");
-    // console.log(this.totalHealth);
   }
 
   update() {
@@ -297,7 +276,6 @@ export default class InfiniteGameState extends Phaser.State {
     const xpos = bomb.x;
     const ypos = bomb.y;
     bomb.damage(1);
-    this.totalHealth -= 1;
     if (bomb.health <= 0) {
       bomb.kill();
     }
@@ -327,8 +305,7 @@ export default class InfiniteGameState extends Phaser.State {
   killBrick(brick) {
     const healthLeft = brick.health;
     this.score += healthLeft;
-    this.scoreText.text = `Score: ${this.score}`;
-    this.totalHealth -= healthLeft;
+    this.scoreText.text = `得分: ${this.score}`;
     brick.damage(healthLeft);
     brick.kill();
     let explosion = this.explosionGroup.getFirstExists(false);
@@ -346,7 +323,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.game.audio.boom.playIfNotMuted();
   }
 
-  listener() {
+  updateScore() {
     const openDataContext = wx.getOpenDataContext();
     openDataContext.postMessage({
       action: 'UPDATE_SCORE',
@@ -355,11 +332,17 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   checkGameStatus() {
-    if (this.totalHealth <= 0) {
-      this.listener();
+    const bullet = this.bulletGroup.getFirstExists(true);
+    if (bullet) {
+      // if there are still bullets on the screen
+      return;
+    }
+    const brick = this.brickGroup.getFirstExists(true);
+    if (!brick) {
+      this.updateScore();
       this.goToNextGame();
     } else if (this.bulletLeft <= 0) {
-      this.listener();
+      this.updateScore();
       this.gameEnd();
     }
   }
@@ -368,12 +351,12 @@ export default class InfiniteGameState extends Phaser.State {
     this.game.audio.pass.playIfNotMuted();
     setTimeout(() => {
       // show some animation here
-      this.state.game.state.start('infiniteGame', true, false,
+      this.state.game.state.start('infiniteGameAnimation', true, false,
         {
           map: generateMap(this.level + 1),
           level: this.level + 1,
           score: this.score,
-          bullet: this.bulletLeft + 10,
+          bullet: this.bulletLeft + 8 * bulletsPerShot, // refill 8 shots of bullets
         });
     }, 4000);
   }
@@ -394,14 +377,15 @@ export default class InfiniteGameState extends Phaser.State {
   shoot() {
     const bullet = this.bulletGroup.getFirstExists(true);
     if (!bullet && this.bulletLeft >= 1) {
-      this.bulletLeft -= 1;
-      this.bulletText.text = `Bullet: ${this.bulletLeft}`;
       this.game.audio.bullet.playIfNotMuted();
       this.bulletGroup.removeAll();
       this.aimingLineGroup.removeAll();
       const bulletAngle = this.cannon.rotation + Math.PI / 2; // 0 -> left, pi/2 -> up
-      for (let i = 0; i < 10; i += 1) {
+      for (let i = 0; i < bulletsPerShot; i += 1) {
         this.game.time.events.add((Phaser.Timer.SECOND / 10) * i, () => {
+          if (this.bulletLeft <= 0) {
+            return;
+          }
           const newBullet = this.bulletGroup.create(this.cannon.x, this.cannon.y, 'bullet');
           newBullet.body.bounce.set(1);
           newBullet.outOfBoundsKill = true;
@@ -410,8 +394,13 @@ export default class InfiniteGameState extends Phaser.State {
           newBullet.scale.setTo(0.3, 0.3);
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
-          if (i === 9) {
-            newBullet.events.onKilled.add(this.checkGameStatus, this);
+          newBullet.events.onKilled.add(this.checkGameStatus, this);
+          this.bulletLeft -= 1;
+          this.bulletText.text = `子弹: ${this.bulletLeft}`;
+          if (this.bulletLeft <= 3 * bulletsPerShot) {
+            this.bulletText.setStyle({ font: '24px', fill: '#ff3333' }, true);
+          } else {
+            this.bulletText.setStyle({ font: '24px', fill: '#ffffff' }, true);
           }
         }, this);
       }
@@ -422,7 +411,6 @@ export default class InfiniteGameState extends Phaser.State {
     this.score += 1;
     this.scoreText.text = `Score: ${this.score}`;
     brick.damage(1);
-    this.totalHealth -= 1;
     if (brick.health <= 0) {
       brick.kill();
       let explosion = this.explosionGroup.getFirstExists(false);
