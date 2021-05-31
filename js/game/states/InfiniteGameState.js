@@ -423,6 +423,11 @@ export default class InfiniteGameState extends Phaser.State {
     brick.damage(1);
     // eslint-disable-next-line no-param-reassign
     brick.healthText.text = `${brick.health}`;
+    brick.healthText.setStyle({ font: 'bold 26px Courier', fill: '#E74C3C' }, true);
+    // eslint-disable-next-line no-param-reassign
+    brick.healthText.anim = setTimeout(() => {
+      brick.healthText.setStyle({ font: '20px Courier', fill: '#f0f0f0' }, true);
+    }, 200);
     if (brick.health <= 0) {
       brick.kill();
       brick.healthText.destroy();
