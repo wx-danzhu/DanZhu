@@ -978,7 +978,7 @@ const buttons = [
   },
   {
     key: 'about',
-    name: 'About Danzhu 2021',
+    name: '关于弹珠之城 © 2021',
     state: 'licensepage',
   },
 ];

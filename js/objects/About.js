@@ -9,7 +9,7 @@ export default class About extends Phaser.Sprite {
 
     this.anchor.setTo(0.5, 0.5);
 
-    const style = { font: '15px Arial', fill: '#000', align: 'center' };
+    const style = { font: '18px Arial', fill: '#1A5276', align: 'center' };
     const text = this.game.make.text(10, 0, properties.name, style);
     text.anchor.setTo(0.5, 0.5);
     this.addChild(text);
@@ -19,7 +19,7 @@ export default class About extends Phaser.Sprite {
   }
 
   onDown() {
-    this.scale.setTo(1.3, 1.3);
+    this.scale.setTo(1.1, 1.1);
   }
 
   onUp() {
