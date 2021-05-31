@@ -405,7 +405,7 @@ export default class InfiniteGameState extends Phaser.State {
           newBullet.outOfBoundsKill = true;
           newBullet.checkWorldBounds = true;
           newBullet.anchor.setTo(0.5, 0.5);
-          newBullet.scale.setTo(0.3, 0.3);
+          newBullet.scale.setTo(1, 1);
           newBullet.body.velocity.x = Math.cos(Math.PI - bulletAngle) * 500;
           newBullet.body.velocity.y = -Math.sin(Math.PI - bulletAngle) * 500;
           newBullet.events.onKilled.add(this.checkGameStatus, this);
@@ -447,7 +447,7 @@ export default class InfiniteGameState extends Phaser.State {
       anim.onComplete.add(() => {
         explosion.kill();
       }, this);
-      this.game.audio.boom.playIfNotMuted();
+      this.game.audio.brick.playIfNotMuted();
     }
   }
 
