@@ -407,7 +407,7 @@ export default class GameState extends Phaser.State {
       this.nextLevelButton.anchor.setTo(0.5, 0.5);
       this.nextLevelButton.scale.setTo(1.2, 0.7);
       dialog.addChild(this.nextLevelButton);
-  
+
       const nextLevelText = this.game.add.text(0, 2, '下一关', style);
       nextLevelText.anchor.setTo(0.5, 0.5);
       nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
@@ -416,7 +416,7 @@ export default class GameState extends Phaser.State {
       const passAllStyle = { font: '16px', fill: '#000000' };
       const passAllText = this.game.add.text(0, 2, '恭喜通关!', passAllStyle);
       passAllText.anchor.setTo(0.5, 0.7);
-      passAllText.scale.setTo(0.7, 0.7);  
+      passAllText.scale.setTo(0.7, 0.7);
       dialog.addChild(passAllText);
     }
 
@@ -469,7 +469,8 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
-    } else if (this.levelIndex !== 7 && Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
+    } else if (this.levelIndex !== 7 &&
+      Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
       // go to next level
       this.game.paused = false;
       this.game.input.onDown.remove(this.goToNextDown, this);
