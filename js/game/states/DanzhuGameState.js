@@ -401,7 +401,8 @@ export default class GameState extends Phaser.State {
     dialog.scale.setTo(2.5, 2.5);
 
     const style = { font: '16px', fill: '#ffffff' };
-    if (this.levelIndex !== 7) {
+    const maxLevel = Buttons[1].children.length;
+    if (this.levelIndex !== maxLevel) {
       // 下一关
       this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
       this.nextLevelButton.anchor.setTo(0.5, 0.5);
@@ -459,7 +460,8 @@ export default class GameState extends Phaser.State {
       return;
     }
     let goToNextBonuds = null;
-    if (this.levelIndex !== 7) {
+    const maxLevel = Buttons[1].children.length;
+    if (this.levelIndex !== maxLevel) {
       goToNextBonuds = this.nextLevelButton.getBounds();
     }
     const backBonuds = this.backButton.getBounds();
@@ -469,7 +471,7 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
-    } else if (this.levelIndex !== 7
+    } else if (this.levelIndex !== maxLevel
       && Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
       // go to next level
       this.game.paused = false;
