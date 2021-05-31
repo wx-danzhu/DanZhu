@@ -469,8 +469,8 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
-    } else if (this.levelIndex !== 7 &&
-      Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
+    } else if (this.levelIndex !== 7
+      && Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
       // go to next level
       this.game.paused = false;
       this.game.input.onDown.remove(this.goToNextDown, this);
