@@ -40,13 +40,13 @@ export default class GameState extends Phaser.State {
   preload() {
     this.game.load.image('cannon', 'assets/plane/images/DarkCannon.png');
     this.game.load.image('brick', 'assets/plane/images/SquareFort.png');
-    this.game.load.image('bullet', 'assets/rolling_ball/ball_blue_small.png');
+    this.game.load.image('bullet', 'assets/plane/images/bullet.png');
     this.game.load.spritesheet('explosion', 'assets/plane/images/explosion.png', 47, 64, 19);
 
     this.game.load.atlas('common', 'assets/plane/images/common.png', null, Common);
 
     this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
-    this.createAudio('boom', 'assets/plane/audio/boom.mp3');
+    this.createAudio('boom', 'assets/plane/audio/explosion.mp3');
     this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
 
   }
