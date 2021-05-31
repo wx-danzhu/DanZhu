@@ -15,7 +15,7 @@ export default class Arrow extends Phaser.Sprite {
   }
 
   onDown() {
-    this.scale.setTo(1.5, 1.5);
+    this.scale.setTo(1.2, 1.2);
   }
 
   onUp() {

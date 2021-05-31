@@ -3,7 +3,7 @@
 import Phaser from '../../libs/phaser-wx';
 import Pause from '../objects/Pause';
 import Wall from '../objects/Wall';
-import generateMap from '../../utils/MapGenerator';
+import generateMap from '../../utils/MapGen';
 
 const wallWidth = 10;
 const wallHeight = 50;
@@ -316,6 +316,7 @@ export default class InfiniteGameState extends Phaser.State {
     this.scoreText.text = `得分: ${this.score}`;
     brick.damage(healthLeft);
     brick.kill();
+    brick.healthText.destroy();
     let explosion = this.explosionGroup.getFirstExists(false);
     if (!explosion) {
       explosion = this.explosionGroup.create(brick.x, brick.y, 'explosion');
