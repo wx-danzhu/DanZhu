@@ -278,11 +278,11 @@ export default class GameState extends Phaser.State {
           this.bulletLeft -= 1;
           this.bulletText.text = `子弹: ${this.bulletLeft}`;
           if (calculateStarNumber(this.bulletLeft) === 3) {
-            this.bulletText.setStyle({ fill: '#ffffff' }, true);
+            this.bulletText.setStyle({ font: '24px', fill: '#ffffff' }, true);
           } else if (calculateStarNumber(this.bulletLeft) === 2) {
-            this.bulletText.setStyle({ fill: '#fff633' }, true);
+            this.bulletText.setStyle({ font: '24px', fill: '#fff633' }, true);
           } else {
-            this.bulletText.setStyle({ fill: '#ff3333' }, true);
+            this.bulletText.setStyle({ font: '24px', fill: '#ff3333' }, true);
           }
         }, this);
       }
@@ -293,6 +293,11 @@ export default class GameState extends Phaser.State {
     brick.damage(1);
     // eslint-disable-next-line no-param-reassign
     brick.healthText.text = `${brick.health}`;
+    brick.healthText.setStyle({ font: 'bold 26px Courier', fill: '#E74C3C' }, true);
+    // eslint-disable-next-line no-param-reassign
+    brick.healthText.anim = setTimeout(() => {
+      brick.healthText.setStyle({ font: '20px Courier', fill: '#f0f0f0' }, true);
+    }, 200);
     if (brick.health <= 0) {
       brick.kill();
       brick.healthText.destroy();
