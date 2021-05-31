@@ -400,17 +400,26 @@ export default class GameState extends Phaser.State {
     dialog.anchor.setTo(0.5, 0.5);
     dialog.scale.setTo(2.5, 2.5);
 
-    // 下一关
-    this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
-    this.nextLevelButton.anchor.setTo(0.5, 0.5);
-    this.nextLevelButton.scale.setTo(1.2, 0.7);
-    dialog.addChild(this.nextLevelButton);
-
     const style = { font: '16px', fill: '#ffffff' };
-    const nextLevelText = this.game.add.text(0, 2, '下一关', style);
-    nextLevelText.anchor.setTo(0.5, 0.5);
-    nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
-    this.nextLevelButton.addChild(nextLevelText);
+    const maxLevel = Buttons[1].children.length;
+    if (this.levelIndex !== maxLevel) {
+      // 下一关
+      this.nextLevelButton = this.game.add.sprite(0, 0, 'common', 'button');
+      this.nextLevelButton.anchor.setTo(0.5, 0.5);
+      this.nextLevelButton.scale.setTo(1.2, 0.7);
+      dialog.addChild(this.nextLevelButton);
+
+      const nextLevelText = this.game.add.text(0, 2, '下一关', style);
+      nextLevelText.anchor.setTo(0.5, 0.5);
+      nextLevelText.scale.setTo(0.55 / 1.2, 0.55 / 0.7);
+      this.nextLevelButton.addChild(nextLevelText);
+    } else {
+      const passAllStyle = { font: '16px', fill: '#000000' };
+      const passAllText = this.game.add.text(0, 2, '恭喜通关!', passAllStyle);
+      passAllText.anchor.setTo(0.5, 0.7);
+      passAllText.scale.setTo(0.7, 0.7);
+      dialog.addChild(passAllText);
+    }
 
     // 返回
     this.backButton = this.game.add.sprite(0, 16, 'common', 'button');
@@ -450,7 +459,11 @@ export default class GameState extends Phaser.State {
     if (!this.game.paused) {
       return;
     }
-    const goToNextBonuds = this.nextLevelButton.getBounds();
+    let goToNextBonuds = null;
+    const maxLevel = Buttons[1].children.length;
+    if (this.levelIndex !== maxLevel) {
+      goToNextBonuds = this.nextLevelButton.getBounds();
+    }
     const backBonuds = this.backButton.getBounds();
     if (Phaser.Rectangle.contains(backBonuds, event.x, event.y)) {
       // back button pressed
@@ -458,7 +471,8 @@ export default class GameState extends Phaser.State {
       this.game.input.onDown.remove(this.gameEndMenuDown, this);
       this.destroyAudios();
       this.game.state.start('menu');
-    } else if (Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
+    } else if (this.levelIndex !== maxLevel
+      && Phaser.Rectangle.contains(goToNextBonuds, event.x, event.y)) {
       // go to next level
       this.game.paused = false;
       this.game.input.onDown.remove(this.goToNextDown, this);
