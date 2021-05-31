@@ -34,6 +34,9 @@ export default class GameState extends Phaser.State {
     audio.src = src;
     audio.playIfNotMuted = (() => {
       if (!this.game.mute) {
+        if (name !== 'bgm') {
+          audio.stop();
+        }
         audio.play();
       }
     });
@@ -53,7 +56,8 @@ export default class GameState extends Phaser.State {
   preload() {
     this.createAudio('bgm', 'assets/soundEffects/bgm.mp3', true);
     this.createAudio('boom', 'assets/soundEffects/boom.mp3');
-    this.createAudio('bullet', 'assets/soundEffects/bullet.mp3');
+    this.createAudio('bullet', 'assets/soundEffects/bullet.wav');
+    this.createAudio('brick', 'assets/soundEffects/brick.wav');
     this.createAudio('pass', 'assets/soundEffects/pass.mp3');
   }
 
@@ -313,7 +317,7 @@ export default class GameState extends Phaser.State {
       anim.onComplete.add(() => {
         explosion.kill();
       }, this);
-      this.game.audio.boom.playIfNotMuted();
+      this.game.audio.brick.playIfNotMuted();
     }
   }
 
