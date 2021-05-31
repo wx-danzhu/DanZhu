@@ -63,7 +63,7 @@ export default class InfiniteGameState extends Phaser.State {
     // start physics engine
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.game.stage.backgroundColor = '#042960';
+    this.game.stage.backgroundColor = '#00B5C6';
 
     this.game.input.onDown.add(this.dragStart, this);
     this.game.input.onUp.add(this.dragStop, this);
@@ -172,7 +172,7 @@ export default class InfiniteGameState extends Phaser.State {
     while (currentLength < lineLength) {
       const aimingLine = this.aimingLineGroup.create(currentX, currentY, 'bullet');
       aimingLine.anchor.setTo(0.5, 0.5);
-      aimingLine.scale.setTo(0.1, 0.1);
+      aimingLine.scale.setTo(0.3, 0.3);
       currentX += deltaX;
       currentY += deltaY;
       currentLength += gapLength;
