@@ -5,7 +5,7 @@ import LongRect from '../objects/LongRect';
 import Title from '../objects/Title';
 import About from '../objects/About';
 import MuteButton from '../objects/MuteButton';
-import generateMap from '../utils/MapGenerator';
+import generateMap from '../utils/MapGen';
 
 export default class MenuState extends Phaser.State {
   constructor(game) {
@@ -73,7 +73,7 @@ export default class MenuState extends Phaser.State {
   clickLongRect() {
     this.state.game.state.start('infiniteGameAnimation', true, false,
       {
-        map: generateMap(),
+        map: generateMap(1),
         level: 1,
         score: 0,
         bullet: 10 * 10,
