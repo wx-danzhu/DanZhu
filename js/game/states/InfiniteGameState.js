@@ -41,10 +41,10 @@ export default class InfiniteGameState extends Phaser.State {
   }
 
   preload() {
-    this.createAudio('bgm', 'assets/plane/audio/bgm.mp3', true);
-    this.createAudio('boom', 'assets/plane/audio/boom.mp3');
-    this.createAudio('bullet', 'assets/plane/audio/bullet.mp3');
-    this.createAudio('pass', 'assets/plane/audio/pass.mp3');
+    this.createAudio('bgm', 'assets/soundEffects/bgm.mp3', true);
+    this.createAudio('boom', 'assets/soundEffects/boom.mp3');
+    this.createAudio('bullet', 'assets/soundEffects/bullet.mp3');
+    this.createAudio('pass', 'assets/soundEffects/pass.mp3');
   }
 
   init(parameters) {
@@ -111,7 +111,7 @@ export default class InfiniteGameState extends Phaser.State {
     // cannon
     this.cannon = this.game.add.sprite(this.game.width / 2, this.game.height - 50, 'cannon');
     this.cannon.anchor.setTo(0.5, 0.5);
-    this.cannon.scale.setTo(0.5, 0.5);
+    this.cannon.scale.setTo(0.07, 0.07);
 
     // aiming lines
     this.aimingLineGroup = this.game.add.group();
@@ -229,7 +229,7 @@ export default class InfiniteGameState extends Phaser.State {
       brick.height = brickLen;
       brick.width = brickLen;
 
-      const textStyle = { font: '20px Courier', fill: '#f0f0f0' };
+      const textStyle = { font: '24px Courier', fill: '#000000' };
       brick.healthText = this.game.add.text(0, 0, `${brick.health}`, textStyle);
       brick.healthText.anchor.set(0.5);
       brick.healthText.x = Math.floor(brick.x + brick.width / 2 + 1);
@@ -426,7 +426,7 @@ export default class InfiniteGameState extends Phaser.State {
     brick.healthText.setStyle({ font: 'bold 26px Courier', fill: '#E74C3C' }, true);
     // eslint-disable-next-line no-param-reassign
     brick.healthText.anim = setTimeout(() => {
-      brick.healthText.setStyle({ font: '20px Courier', fill: '#f0f0f0' }, true);
+      brick.healthText.setStyle({ font: '24px Courier', fill: '#healthText' }, true);
     }, 200);
     if (brick.health <= 0) {
       brick.kill();
